@@ -87,7 +87,7 @@ public class TuguaFragment extends Fragment {
 	}
 
 	private List<Map<String, String>> readDataFromDatabase() {
-		Cursor cursor = dbhelper.getReadableDatabase().rawQuery("select * from tugua_item", null);
+		Cursor cursor = dbhelper.getReadableDatabase().rawQuery("select * from tugua_item order by pubDate DESC", null);
 		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 		while (cursor.moveToNext()) {
 			Map<String, String> map = new HashMap<String, String>();

@@ -8,6 +8,12 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
-    <item android:id="@+id/refresh" android:title="@string/refresh"></item>
+    <item
+        android:id="@+id/refresh"
+        android:showAsAction="ifRoom"
+        android:title="@string/refresh"
+        android:icon="@drawable/ic_menu_refresh"
+        >
+    </item>
 
 </menu>

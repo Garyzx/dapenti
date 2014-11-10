@@ -2,8 +2,11 @@ package net.dasherz.dapenti.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -11,18 +14,19 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.util.Xml;
 
 public class TuguaXmlParser {
+
 	public static class TuguaItem {
 		private String title;
 		private String link;
 		private String author;
-		private String pubDate;
+		private long pubDate;
 		private String description;
 
 		public TuguaItem() {
 			super();
 		}
 
-		public TuguaItem(String title, String link, String author, String pubDate, String description) {
+		public TuguaItem(String title, String link, String author, long pubDate, String description) {
 			super();
 			this.title = title;
 			this.link = link;
@@ -55,11 +59,11 @@ public class TuguaXmlParser {
 			this.author = author;
 		}
 
-		public String getPubDate() {
+		public long getPubDate() {
 			return pubDate;
 		}
 
-		public void setPubDate(String pubDate) {
+		public void setPubDate(long pubDate) {
 			this.pubDate = pubDate;
 		}
 
@@ -75,7 +79,7 @@ public class TuguaXmlParser {
 
 	private static final String ns = null;
 
-	public List<TuguaItem> parse(InputStream in) throws XmlPullParserException, IOException {
+	public List<TuguaItem> parse(InputStream in) throws XmlPullParserException, IOException, ParseException {
 		try {
 			XmlPullParser parser = Xml.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -87,7 +91,7 @@ public class TuguaXmlParser {
 		}
 	}
 
-	private List<TuguaItem> readRss(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private List<TuguaItem> readRss(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
 		parser.require(XmlPullParser.START_TAG, ns, "rss");
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -104,7 +108,8 @@ public class TuguaXmlParser {
 		return null;
 	}
 
-	private List<TuguaItem> readChannel(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private List<TuguaItem> readChannel(XmlPullParser parser) throws XmlPullParserException, IOException,
+			ParseException {
 		List<TuguaItem> items = new ArrayList<>();
 		parser.require(XmlPullParser.START_TAG, ns, "channel");
 		while (parser.next() != XmlPullParser.END_TAG) {
@@ -122,7 +127,7 @@ public class TuguaXmlParser {
 		return items;
 	}
 
-	private TuguaItem readItem(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private TuguaItem readItem(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
 		parser.require(XmlPullParser.START_TAG, ns, "item");
 		TuguaItem item = new TuguaItem();
 		while (parser.next() != XmlPullParser.END_TAG) {
@@ -147,11 +152,14 @@ public class TuguaXmlParser {
 		return item;
 	}
 
-	private String readPubDate(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private long readPubDate(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss Z", Locale.US);
 		parser.require(XmlPullParser.START_TAG, ns, "pubDate");
 		String text = readText(parser);
+		// delete day in a week, because it's not standard. "Wes"
+		text = text.substring(5);
 		parser.require(XmlPullParser.END_TAG, ns, "pubDate");
-		return text;
+		return sdf.parse(text).getTime();
 	}
 
 	private String readDescription(XmlPullParser parser) throws XmlPullParserException, IOException {

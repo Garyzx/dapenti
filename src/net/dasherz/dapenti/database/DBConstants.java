@@ -10,6 +10,6 @@ public class DBConstants {
 	public static final String ITEM_LINK = "link";
 	public static final String ITEM_TITLE = "title";
 
-	public static final String CREATE_TABLE_TUGUA_SQL = "create table tugua_item(_id integer primary key autoincrement , title , link,author,pubDate,description);";
+	public static final String CREATE_TABLE_TUGUA_SQL = "create table tugua_item(_id integer primary key autoincrement , title text, link text ,author text,pubDate integer,description text);";
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.List;
 
 import net.dasherz.dapenti.database.DBConstants;
@@ -133,6 +134,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			} catch (XmlPullParserException e) {
 				e.printStackTrace();
 				// return getResources().getString(R.string.xml_error);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			return null;
 		}
@@ -147,7 +151,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				Cursor cursor = dbhelper.getReadableDatabase().query(false, DBConstants.TABLE_TUGUA,
 						new String[] { DBConstants.ITEM_TITLE }, "title=?", new String[] { item.getTitle() }, null,
 						null, null, null);
-				if (cursor.moveToNext() == false) {
+				if (cursor.getCount() == 0) {
 					ContentValues valus = new ContentValues();
 					valus.put(DBConstants.ITEM_TITLE, item.getTitle());
 					valus.put(DBConstants.ITEM_LINK, item.getLink());
@@ -169,7 +173,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 
-	private List<TuguaItem> loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException {
+	private List<TuguaItem> loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException,
+			ParseException {
 		InputStream stream = null;
 		TuguaXmlParser stackOverflowXmlParser = new TuguaXmlParser();
 		List<TuguaItem> items = null;
