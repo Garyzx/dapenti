@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -54,6 +55,7 @@ public class PentiAdapter extends BaseAdapter {
 			textView.setText(getData().get(position).get(itemName));
 		} else {
 			textView.setText(getFooter());
+			textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 		}
 		return textView;
 	}

@@ -6,4 +6,10 @@
 	<item>意图</item>
 	<item>收藏</item>
 </string-array>
+<string-array name="tab_name_values">
+	<item>0</item>
+	<item>1</item>
+	<item>2</item>
+	<item>3</item>
+</string-array>
 </resources>

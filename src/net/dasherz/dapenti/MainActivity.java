@@ -18,6 +18,8 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +34,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+	private static final String PREFERENCE_NAME = "net.dasherz.dapenti_preferences";
+
 	public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
 		private static final int TAB_COUNT = 4;
@@ -97,6 +101,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		for (int i = 0; i < mAppSectionsPagerAdapter.getCount(); i++) {
 			actionBar.addTab(actionBar.newTab().setText(mAppSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 		}
+
+		SharedPreferences settings = getSharedPreferences(PREFERENCE_NAME, MODE_PRIVATE);
+
+		mViewPager.setCurrentItem(Integer.parseInt(settings.getString("defaultChannel", "1")));
+		Log.d("SP", "" + settings.getString("defaultChannel", ""));
+		Log.d("SP", "" + settings.getBoolean("loadPicture", false));
+		Log.d("SP", "" + settings.getBoolean("loadPictureUnderWIFI", false));
 	}
 
 	@Override
@@ -113,6 +124,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, FragmentPreferences.class);
+			startActivity(intent);
 			return true;
 		}
 		if (id == R.id.refresh) {
