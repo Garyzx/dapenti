@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -105,6 +106,8 @@ public class TuguaFragment extends Fragment {
 				Log.d("ITEM", "Item was long clicked: " + position);
 				Toast.makeText(getActivity(), "Item long clicked,  positon: " + position + "  id: " + id,
 						Toast.LENGTH_SHORT).show();
+				listView.setFocusable(false);
+				listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 				return true;
 			}
 		});
@@ -188,13 +191,15 @@ public class TuguaFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(List<TuguaItem> items) {
+			if (items == null) {
+				Toast.makeText(getActivity(), "更新出错了", Toast.LENGTH_SHORT).show();
+				swipeLayout.setRefreshing(false);
+				return;
+			}
 			int itemUpdated = 0;
 			PentiDatabaseHelper dbhelper = new PentiDatabaseHelper(getActivity(), DBConstants.DATABASE_NAME, null,
 					DBConstants.version);
 			// dbhelper.getWritableDatabase().execSQL("delete from tugua_item");
-			if (items == null) {
-				Toast.makeText(getActivity(), "更新出错了", Toast.LENGTH_SHORT).show();
-			}
 			for (TuguaItem item : items) {
 				Cursor cursor = dbhelper.getReadableDatabase().query(false, DBConstants.TABLE_TUGUA,
 						new String[] { DBConstants.ITEM_TITLE }, "title=?", new String[] { item.getTitle() }, null,
