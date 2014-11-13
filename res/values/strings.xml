@@ -8,5 +8,7 @@
     <string name="picture">意图</string>
     <string name="favourite">收藏</string>
     <string name="refresh">刷新</string>
+    <string name="title_activity_tugua_detail">每日图卦</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

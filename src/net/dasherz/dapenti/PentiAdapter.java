@@ -49,7 +49,7 @@ public class PentiAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		TextView textView = new TextView(ctx);
 		textView.setTextSize(20);
-		textView.setPadding(0, 5, 0, 5);
+		textView.setPadding(20, 5, 10, 5);
 		textView.setMinHeight(200);
 		if (position < getData().size()) {
 			textView.setText(getData().get(position).get(itemName));

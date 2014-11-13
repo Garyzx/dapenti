@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.util.Log;
@@ -89,13 +90,20 @@ public class TuguaFragment extends Fragment {
 						.show();
 				Toast.makeText(getActivity(), listView.getAdapter().getItem(position).toString(), Toast.LENGTH_SHORT)
 						.show();
-				if (listView.getAdapter().getItem(position).toString().equals(Constants.LOAD_MORE)) {
+				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
 					List<Map<String, String>> extraData = readDataFromDatabase();
 					adapter.getData().addAll(extraData);
 					if (extraData.size() == 0) {
 						adapter.setFooter(Constants.NO_MORE_NEW);
 					}
 					adapter.notifyDataSetChanged();
+				} else if (position < adapter.getCount() - 1 && adapter.getData().get(position) instanceof Map) {
+					Map<String, String> item = adapter.getData().get(position);
+					Log.d("TEST", item.toString());
+					Intent intent = new Intent(getActivity(), TuguaDetailActivity.class);
+					intent.putExtra(DBConstants.ITEM_TITLE, item.get(DBConstants.ITEM_TITLE));
+					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.get(DBConstants.ITEM_DESCRIPTION));
+					startActivity(intent);
 				}
 			}
 		});
@@ -218,6 +226,8 @@ public class TuguaFragment extends Fragment {
 			}
 			dbhelper.close();
 			if (itemUpdated > 0) {
+				// load from beginning
+				recordCount = 0;
 				reloadList();
 			} else {
 				Toast.makeText(getActivity(), "已经是最新了", Toast.LENGTH_SHORT).show();
