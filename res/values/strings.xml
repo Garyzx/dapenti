@@ -9,6 +9,8 @@
     <string name="favourite">收藏</string>
     <string name="refresh">刷新</string>
     <string name="title_activity_tugua_detail">每日图卦</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="add_favourite">添加到收藏</string>
+    <string name="copy_title">复制标题</string>
+    <string name="open_in_browser">浏览器中打开</string>
 
 </resources>

@@ -34,7 +34,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
-	private static final String PREFERENCE_NAME = "net.dasherz.dapenti_preferences";
 
 	public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -102,7 +101,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			actionBar.addTab(actionBar.newTab().setText(mAppSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 		}
 
-		SharedPreferences settings = getSharedPreferences(PREFERENCE_NAME, MODE_PRIVATE);
+		SharedPreferences settings = getSharedPreferences(Constants.PREFERENCE_NAME, MODE_PRIVATE);
 
 		mViewPager.setCurrentItem(Integer.parseInt(settings.getString("defaultChannel", "1")));
 		Log.d("SP", "" + settings.getString("defaultChannel", ""));

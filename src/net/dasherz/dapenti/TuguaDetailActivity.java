@@ -5,7 +5,11 @@ import java.io.IOException;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.util.NetUtil;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -14,11 +18,13 @@ import android.view.MenuItem;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TuguaDetailActivity extends Activity {
 
 	TextView titleView;
 	WebView tuguaWebView;
+	String title, url, link;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,10 +34,13 @@ public class TuguaDetailActivity extends Activity {
 		titleView = (TextView) findViewById(R.id.tuguaTitle);
 		tuguaWebView = (WebView) findViewById(R.id.tuguaDetailPage);
 		Intent intent = getIntent();
-		String title = intent.getStringExtra(DBConstants.ITEM_TITLE);
-		final String url = intent.getStringExtra(DBConstants.ITEM_DESCRIPTION);
+		title = intent.getStringExtra(DBConstants.ITEM_TITLE);
+		url = intent.getStringExtra(DBConstants.ITEM_DESCRIPTION);
+		link = intent.getStringExtra(DBConstants.ITEM_LINK);
 		titleView.setText(title);
-		tuguaWebView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
+		boolean whetherBlockImage = NetUtil.whetherBlockImage(this);
+		tuguaWebView.getSettings().setBlockNetworkImage(whetherBlockImage);
+		// tuguaWebView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 		// tuguaWebView.loadUrl(url);
 		new LoadPageTask().execute(url);
 	}
@@ -55,7 +64,9 @@ public class TuguaDetailActivity extends Activity {
 			// }
 			// buffer.append(line);
 			// }
-
+			if (lines == null) {
+				lines = "获取数据失败。";
+			}
 			String content = "<html xmlns=\"http://www.w3.org/1999/xhtml\" ><head><meta http-equiv='content-type' content='text/html; charset=gb2312' /></head><body>"
 					+ lines + "</body>";
 			lines = null;
@@ -74,13 +85,8 @@ public class TuguaDetailActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		// getMenuInflater().inflate(R.menu.tugua_detail, menu);
+		getMenuInflater().inflate(R.menu.tugua_detail, menu);
 		return true;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return false;
 	}
 
 	@Override
@@ -93,7 +99,20 @@ public class TuguaDetailActivity extends Activity {
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		}
-		if (id == R.id.action_settings) {
+		if (id == R.id.add_favourite) {
+			// TODO
+			return true;
+		}
+		if (id == R.id.copy_title) {
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			ClipData clip = ClipData.newPlainText("title", title);
+			clipboard.setPrimaryClip(clip);
+			Toast.makeText(this, "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
+			return true;
+		}
+		if (id == R.id.open_in_browser) {
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+			startActivity(browserIntent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

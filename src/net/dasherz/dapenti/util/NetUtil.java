@@ -7,6 +7,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import net.dasherz.dapenti.Constants;
+import net.dasherz.dapenti.TuguaDetailActivity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
 public class NetUtil {
 	// Given a string representation of a URL, sets up a connection and gets
 	// an input stream.
@@ -62,5 +70,39 @@ public class NetUtil {
 
 		return sb.toString();
 
+	}
+
+	public static boolean getNetworkMode(Context ctx) {
+		ConnectivityManager connectivityManager = (ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+		if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+			Log.d("NET", "in WIFI");
+			return true;
+		}
+		Log.d("NET", "no WIFI");
+		return false;
+	}
+
+	public static boolean whetherBlockImage(Context ctx) {
+		SharedPreferences settings = ctx.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+		boolean loadPicture = settings.getBoolean("loadPicture", true);
+		boolean loadPictureUnderWIFI = settings.getBoolean("loadPictureUnderWIFI", true);
+		boolean isUnderWIFI = getNetworkMode(ctx);
+
+		Log.d("IMAGE", "" + loadPicture);
+		Log.d("IMAGE", "" + loadPictureUnderWIFI);
+		Log.d("IMAGE", "" + isUnderWIFI);
+		if (!loadPicture) {
+			return true;
+		} else {
+			if (loadPictureUnderWIFI == false) {
+				return false;
+			} else if (loadPictureUnderWIFI && isUnderWIFI) {
+				return false;
+			} else {
+				return true;
+			}
+		}
 	}
 }

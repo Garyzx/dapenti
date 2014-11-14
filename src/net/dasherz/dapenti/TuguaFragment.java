@@ -85,11 +85,14 @@ public class TuguaFragment extends Fragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Log.d("ITEM", "Item was clicked: " + position);
-				Toast.makeText(getActivity(), "Item clicked,  positon: " + position + "  id: " + id, Toast.LENGTH_SHORT)
-						.show();
-				Toast.makeText(getActivity(), listView.getAdapter().getItem(position).toString(), Toast.LENGTH_SHORT)
-						.show();
+				// Log.d("ITEM", "Item was clicked: " + position);
+				// Toast.makeText(getActivity(), "Item clicked,  positon: " +
+				// position + "  id: " + id, Toast.LENGTH_SHORT)
+				// .show();
+				// Toast.makeText(getActivity(),
+				// listView.getAdapter().getItem(position).toString(),
+				// Toast.LENGTH_SHORT)
+				// .show();
 				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
 					List<Map<String, String>> extraData = readDataFromDatabase();
 					adapter.getData().addAll(extraData);
@@ -103,6 +106,7 @@ public class TuguaFragment extends Fragment {
 					Intent intent = new Intent(getActivity(), TuguaDetailActivity.class);
 					intent.putExtra(DBConstants.ITEM_TITLE, item.get(DBConstants.ITEM_TITLE));
 					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.get(DBConstants.ITEM_DESCRIPTION));
+					intent.putExtra(DBConstants.ITEM_LINK, item.get(DBConstants.ITEM_LINK));
 					startActivity(intent);
 				}
 			}
