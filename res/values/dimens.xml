@@ -4,5 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="tab_font_size">22sp</dimen>
+    <color name="holo_blue_color">#0FECFF</color>
 
 </resources>

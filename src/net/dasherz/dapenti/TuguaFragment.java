@@ -2,15 +2,12 @@ package net.dasherz.dapenti;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.xmlpull.v1.XmlPullParserException;
+import java.util.Set;
 
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
@@ -18,28 +15,34 @@ import net.dasherz.dapenti.util.NetUtil;
 import net.dasherz.dapenti.xml.TuguaXmlParser;
 import net.dasherz.dapenti.xml.TuguaXmlParser.TuguaItem;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,6 +73,61 @@ public class TuguaFragment extends Fragment {
 		recordCount = 0;
 		root = inflater.inflate(R.layout.list, container, false);
 		listView = (ListView) root.findViewById(R.id.tuguaListView);
+		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+		listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
+			int checkitemCount = 0;
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+				return true;
+			}
+
+			@Override
+			public void onDestroyActionMode(ActionMode mode) {
+				checkitemCount = 0;
+				adapter.clearSelection();
+			}
+
+			@Override
+			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+				MenuInflater inflater = getActivity().getMenuInflater();
+				inflater.inflate(R.menu.list_select_menu, menu);
+				return true;
+			}
+
+			@Override
+			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+				if (item.getItemId() == R.id.copy_title) {
+					StringBuffer buffer = new StringBuffer();
+					for (Integer integer : adapter.getCurrentCheckedPosition()) {
+						buffer.append(adapter.getItem(integer));
+					}
+					Log.d("AD", buffer.toString());
+					ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(
+							android.content.Context.CLIPBOARD_SERVICE);
+					ClipData clip = ClipData.newPlainText("titles", buffer.toString());
+					clipboard.setPrimaryClip(clip);
+					Toast.makeText(getActivity(), "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
+				} else if (item.getItemId() == R.id.add_favourite) {
+					// TODO
+				}
+				Toast.makeText(getActivity(), "add fav clicked.", Toast.LENGTH_SHORT).show();
+				return true;
+			}
+
+			@Override
+			public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+				Toast.makeText(getActivity(), "onItemCheckedStateChanged.", Toast.LENGTH_SHORT).show();
+				if (checked) {
+					checkitemCount++;
+					adapter.setNewSelection(position, checked);
+				} else {
+					checkitemCount--;
+					adapter.removeSelection(position);
+				}
+				mode.setTitle(checkitemCount + "个项目已选择");
+			}
+		});
 		swipeLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
 		swipeLayout.setOnRefreshListener(new OnRefreshListener() {
 
@@ -111,19 +169,117 @@ public class TuguaFragment extends Fragment {
 				}
 			}
 		});
-		listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-				Log.d("ITEM", "Item was long clicked: " + position);
-				Toast.makeText(getActivity(), "Item long clicked,  positon: " + position + "  id: " + id,
-						Toast.LENGTH_SHORT).show();
-				listView.setFocusable(false);
-				listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-				return true;
-			}
-		});
+		// listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+		//
+		// @Override
+		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
+		// position, long id) {
+		// Log.d("ITEM", "Item was long clicked: " + position);
+		// Toast.makeText(getActivity(), "Item long clicked,  positon: " +
+		// position + "  id: " + id,
+		// Toast.LENGTH_SHORT).show();
+		// // listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+		//
+		// // listView.setAdapter(new ArrayAdapter<String>(getActivity(),
+		// // android.R.layout.simple_list_item_activated_1, new String[] {
+		// // "1", "2", "3" }));
+		// return true;
+		// }
+		// });
 		return root;
+	}
+
+	private class PentiAdapter extends BaseAdapter {
+
+		private final HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
+
+		private final Context ctx;
+		private final List<Map<String, String>> data;
+		private final String itemName;
+		private String footer;
+
+		public PentiAdapter(Context ctx, List<Map<String, String>> data, String itemName, String footer) {
+			super();
+			this.ctx = ctx;
+			this.data = data;
+			this.itemName = itemName;
+			this.footer = footer;
+		}
+
+		public void setNewSelection(int position, boolean value) {
+			mSelection.put(position, value);
+			notifyDataSetChanged();
+		}
+
+		public boolean isPositionChecked(int position) {
+			Boolean result = mSelection.get(position);
+			return result == null ? false : result;
+		}
+
+		public Set<Integer> getCurrentCheckedPosition() {
+			return mSelection.keySet();
+		}
+
+		public void removeSelection(int position) {
+			mSelection.remove(position);
+			notifyDataSetChanged();
+		}
+
+		public void clearSelection() {
+			mSelection.clear();// = new HashMap<Integer, Boolean>();
+			notifyDataSetChanged();
+		}
+
+		@Override
+		public int getCount() {
+			return getData().size() + 1;
+		}
+
+		@Override
+		public Object getItem(int position) {
+			if (position < getData().size()) {
+				return getData().get(position).get(itemName);
+			} else {
+				return getFooter();
+
+			}
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// LayoutInflater inflater = LayoutInflater.from(ctx);
+			LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View entry = inflater.inflate(R.layout.tugua_entry, parent, false);
+			TextView textView = (TextView) entry.findViewById(R.id.tugua_entry);
+			// textView.setBackgroundResource(R.drawable.bkg);
+			if (position < getData().size()) {
+				textView.setText(getData().get(position).get(itemName));
+			} else {
+				textView.setText(getFooter());
+				textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+			}
+			if (mSelection.get(position) != null) {
+				entry.setBackgroundColor(getResources().getColor(R.color.holo_blue_color));
+			}
+			return entry;
+		}
+
+		public List<Map<String, String>> getData() {
+			return data;
+		}
+
+		public String getFooter() {
+			return footer;
+		}
+
+		public void setFooter(String footer) {
+			this.footer = footer;
+		}
 	}
 
 	private void loadList() {

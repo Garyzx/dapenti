@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="net.dasherz.dapenti.MainActivity" >
+
+    <item
+        android:id="@+id/add_favourite"
+        android:orderInCategory="100"
+        android:title="@string/add_favourite"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/copy_title"
+        android:orderInCategory="200"
+        android:title="@string/copy_title"
+        app:showAsAction="ifRoom"/>
+    
+</menu>
