@@ -15,8 +15,10 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,7 @@ public class TuguaDetailActivity extends Activity {
 	TextView titleView;
 	WebView tuguaWebView;
 	String title, url, link;
+	ProgressBar progressBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,8 @@ public class TuguaDetailActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		titleView = (TextView) findViewById(R.id.tuguaTitle);
 		tuguaWebView = (WebView) findViewById(R.id.tuguaDetailPage);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+
 		Intent intent = getIntent();
 		title = intent.getStringExtra(DBConstants.ITEM_TITLE);
 		url = intent.getStringExtra(DBConstants.ITEM_DESCRIPTION);
@@ -78,6 +83,7 @@ public class TuguaDetailActivity extends Activity {
 			// tuguaWebView.loadData(new String((result.getBytes("UTF-8"))),
 			// "text/html", "UTF-8");
 			tuguaWebView.loadData(result, "text/html; charset=UTF-8", null);
+			progressBar.setVisibility(View.GONE);
 		}
 
 	}

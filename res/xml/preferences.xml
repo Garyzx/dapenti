@@ -13,7 +13,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="频道设置" >
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="0"
             android:entries="@array/tab_name_list"
             android:entryValues="@array/tab_name_values"
             android:key="defaultChannel"
