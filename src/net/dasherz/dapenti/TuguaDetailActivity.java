@@ -72,7 +72,7 @@ public class TuguaDetailActivity extends Activity {
 			if (lines == null) {
 				lines = "获取数据失败。";
 			}
-			String content = "<html xmlns=\"http://www.w3.org/1999/xhtml\" ><head><meta http-equiv='content-type' content='text/html; charset=gb2312' /></head><body>"
+			String content = "<html xmlns=\"http://www.w3.org/1999/xhtml\" ><head><meta http-equiv='content-type' content='text/html; charset=utf-8' /></head><body>"
 					+ lines + "</body>";
 			lines = null;
 			return content;
