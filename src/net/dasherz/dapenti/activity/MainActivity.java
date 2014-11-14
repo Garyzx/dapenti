@@ -1,4 +1,4 @@
-package net.dasherz.dapenti;
+package net.dasherz.dapenti.activity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +7,18 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.List;
 
+import net.dasherz.dapenti.R;
+import net.dasherz.dapenti.R.array;
+import net.dasherz.dapenti.R.id;
+import net.dasherz.dapenti.R.layout;
+import net.dasherz.dapenti.R.menu;
+import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
+import net.dasherz.dapenti.fragment.FavouriteFragment;
+import net.dasherz.dapenti.fragment.PictureFragment;
+import net.dasherz.dapenti.fragment.TuguaFragment;
+import net.dasherz.dapenti.fragment.TwitteFragment;
 import net.dasherz.dapenti.xml.TuguaXmlParser;
 import net.dasherz.dapenti.xml.TuguaXmlParser.TuguaItem;
 

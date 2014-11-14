@@ -1,4 +1,4 @@
-package net.dasherz.dapenti;
+package net.dasherz.dapenti.constant;
 
 public class Constants {
 	public static final String URL_TUGUA = "http://dapenti.com/blog/tuguaapp.asp";

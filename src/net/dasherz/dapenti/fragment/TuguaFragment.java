@@ -1,4 +1,4 @@
-package net.dasherz.dapenti;
+package net.dasherz.dapenti.fragment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.dasherz.dapenti.R;
+import net.dasherz.dapenti.R.color;
+import net.dasherz.dapenti.R.id;
+import net.dasherz.dapenti.R.layout;
+import net.dasherz.dapenti.R.menu;
+import net.dasherz.dapenti.activity.TuguaDetailActivity;
+import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
 import net.dasherz.dapenti.util.NetUtil;

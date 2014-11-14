@@ -1,5 +1,7 @@
-package net.dasherz.dapenti;
+package net.dasherz.dapenti.activity;
 
+import net.dasherz.dapenti.R;
+import net.dasherz.dapenti.R.xml;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

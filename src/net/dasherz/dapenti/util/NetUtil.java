@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import net.dasherz.dapenti.Constants;
-import net.dasherz.dapenti.TuguaDetailActivity;
+import net.dasherz.dapenti.activity.TuguaDetailActivity;
+import net.dasherz.dapenti.constant.Constants;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;

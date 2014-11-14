@@ -1,7 +1,11 @@
-package net.dasherz.dapenti;
+package net.dasherz.dapenti.activity;
 
 import java.io.IOException;
 
+import net.dasherz.dapenti.R;
+import net.dasherz.dapenti.R.id;
+import net.dasherz.dapenti.R.layout;
+import net.dasherz.dapenti.R.menu;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.util.NetUtil;
 import android.app.Activity;
