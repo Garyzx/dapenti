@@ -30,6 +30,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -137,6 +138,7 @@ public class TuguaFragment extends Fragment {
 			}
 		});
 		swipeLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
+		swipeLayout.setColorSchemeColors(Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW);
 		swipeLayout.setOnRefreshListener(new OnRefreshListener() {
 
 			@Override
