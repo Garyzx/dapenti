@@ -65,6 +65,7 @@ public class TuguaFragment extends Fragment {
 	int recordCount;
 	private SwipeRefreshLayout swipeLayout;
 	PentiAdapter adapter;
+	boolean isRefreshing = false;
 
 	@Override
 	public void onDestroy() {
@@ -140,7 +141,10 @@ public class TuguaFragment extends Fragment {
 
 			@Override
 			public void onRefresh() {
-				getLatestData();
+				if (!isRefreshing) {
+					isRefreshing = true;
+					getLatestData();
+				}
 
 			}
 		});
@@ -150,14 +154,6 @@ public class TuguaFragment extends Fragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// Log.d("ITEM", "Item was clicked: " + position);
-				// Toast.makeText(getActivity(), "Item clicked,  positon: " +
-				// position + "  id: " + id, Toast.LENGTH_SHORT)
-				// .show();
-				// Toast.makeText(getActivity(),
-				// listView.getAdapter().getItem(position).toString(),
-				// Toast.LENGTH_SHORT)
-				// .show();
 				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
 					List<Map<String, String>> extraData = readDataFromDatabase();
 					adapter.getData().addAll(extraData);
@@ -176,23 +172,6 @@ public class TuguaFragment extends Fragment {
 				}
 			}
 		});
-		// listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-		//
-		// @Override
-		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
-		// position, long id) {
-		// Log.d("ITEM", "Item was long clicked: " + position);
-		// Toast.makeText(getActivity(), "Item long clicked,  positon: " +
-		// position + "  id: " + id,
-		// Toast.LENGTH_SHORT).show();
-		// // listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-		//
-		// // listView.setAdapter(new ArrayAdapter<String>(getActivity(),
-		// // android.R.layout.simple_list_item_activated_1, new String[] {
-		// // "1", "2", "3" }));
-		// return true;
-		// }
-		// });
 		return root;
 	}
 
@@ -302,10 +281,6 @@ public class TuguaFragment extends Fragment {
 			}
 
 		} else {
-			// SimpleAdapter adapter = new SimpleAdapter(getActivity(), data,
-			// android.R.layout.simple_list_item_1,
-			// new String[] { DBConstants.ITEM_TITLE }, new int[] {
-			// android.R.id.text1 });
 			adapter = new PentiAdapter(getActivity(), data, DBConstants.ITEM_TITLE, Constants.LOAD_MORE);
 			listView.setAdapter(adapter);
 
@@ -323,11 +298,13 @@ public class TuguaFragment extends Fragment {
 	}
 
 	public void getLatestData() {
+
 		new RefreshTuguaTask().execute(Constants.URL_TUGUA);
 		Log.d("TEST", "get latest data.");
 	}
 
 	private List<Map<String, String>> readDataFromDatabase() {
+		// FIXME move database operation to AsyncTask
 		String limit = String.valueOf(recordCount);
 		Cursor cursor = dbhelper.getReadableDatabase().rawQuery(DBConstants.SELECT_TUGUA, new String[] { limit });
 		recordCount += cursor.getCount();
@@ -369,6 +346,7 @@ public class TuguaFragment extends Fragment {
 			if (items == null) {
 				Toast.makeText(getActivity(), "更新出错了", Toast.LENGTH_SHORT).show();
 				swipeLayout.setRefreshing(false);
+				isRefreshing = false;
 				return;
 			}
 			int itemUpdated = 0;
@@ -390,6 +368,7 @@ public class TuguaFragment extends Fragment {
 					itemUpdated++;
 					Log.d("DB", "insert new record: " + item.getTitle());
 				}
+				cursor.close();
 			}
 			dbhelper.close();
 			if (itemUpdated > 0) {
@@ -400,6 +379,7 @@ public class TuguaFragment extends Fragment {
 				Toast.makeText(getActivity(), "已经是最新了", Toast.LENGTH_SHORT).show();
 			}
 			swipeLayout.setRefreshing(false);
+			isRefreshing = false;
 		}
 	}
 
