@@ -141,10 +141,7 @@ public class TuguaFragment extends Fragment {
 
 			@Override
 			public void onRefresh() {
-				if (!isRefreshing) {
-					isRefreshing = true;
-					getLatestData();
-				}
+				getLatestData();
 
 			}
 		});
@@ -298,9 +295,12 @@ public class TuguaFragment extends Fragment {
 	}
 
 	public void getLatestData() {
+		if (!isRefreshing) {
+			isRefreshing = true;
+			new RefreshTuguaTask().execute(Constants.URL_TUGUA);
+			Log.d("TEST", "get latest data.");
+		}
 
-		new RefreshTuguaTask().execute(Constants.URL_TUGUA);
-		Log.d("TEST", "get latest data.");
 	}
 
 	private List<Map<String, String>> readDataFromDatabase() {
