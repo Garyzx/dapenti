@@ -67,6 +67,7 @@ public class TuguaFragment extends Fragment {
 	PentiAdapter adapter;
 	boolean isRefreshing = false;
 
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
