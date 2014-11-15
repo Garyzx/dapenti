@@ -94,7 +94,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		SharedPreferences settings = getSharedPreferences(Constants.PREFERENCE_NAME, MODE_PRIVATE);
 
-		mViewPager.setCurrentItem(Integer.parseInt(settings.getString("defaultChannel", "1")));
+		mViewPager.setCurrentItem(Integer.parseInt(settings.getString("defaultChannel", "0")));
 		Log.d("SP", "" + settings.getString("defaultChannel", ""));
 		Log.d("SP", "" + settings.getBoolean("loadPicture", false));
 		Log.d("SP", "" + settings.getBoolean("loadPictureUnderWIFI", false));

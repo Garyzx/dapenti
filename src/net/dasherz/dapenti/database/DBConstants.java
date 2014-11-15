@@ -9,9 +9,15 @@ public class DBConstants {
 	public static final String ITEM_AUTHOR = "author";
 	public static final String ITEM_LINK = "link";
 	public static final String ITEM_TITLE = "title";
+	public static final String ITEM_CONTENT_TYPE = "content_type";
+	public static final String ITEM_IS_FAVOURITE = "is_favourite";
 
-	public static final String CREATE_TABLE_TUGUA_SQL = "create table tugua_item(_id integer primary key autoincrement , title text, link text ,author text,pubDate integer,description text);";
-	public static final String SELECT_TUGUA = "select * from tugua_item order by pubDate DESC Limit 10 Offset ?";
-	public static final String SELECT_TUGUA_ALL = "select * from tugua_item order by pubDate DESC";
+	public static final String CREATE_TABLE_TUGUA_SQL = "create table tugua_item(_id integer primary key autoincrement , title text, link text ,author text,pubDate integer,description text,content_type integer, is_favourite integer);";
+	public static final String SELECT_TUGUA = "select * from tugua_item where content_type=? order by pubDate DESC Limit ? Offset ?";
+	public static final String SELECT_TUGUA_ALL = "select * from tugua_item where content_type=? order by pubDate DESC";
+	public static final int CONTENT_TYPE_TUGUA = 1;
+	public static final int CONTENT_TYPE_TWITTE = 2;
+	public static final int CONTENT_TYPE_PICTURE = 3;
+	public static final int ROW_COUNT_EVERY_READ = 10;
 
 }
