@@ -140,7 +140,9 @@ public class TuguaFragment extends Fragment {
 
 			@Override
 			public void onRefresh() {
-				getLatestData();
+				if (!swipeLayout.isRefreshing()) {
+					getLatestData();
+				}
 
 			}
 		});
@@ -150,14 +152,6 @@ public class TuguaFragment extends Fragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// Log.d("ITEM", "Item was clicked: " + position);
-				// Toast.makeText(getActivity(), "Item clicked,  positon: " +
-				// position + "  id: " + id, Toast.LENGTH_SHORT)
-				// .show();
-				// Toast.makeText(getActivity(),
-				// listView.getAdapter().getItem(position).toString(),
-				// Toast.LENGTH_SHORT)
-				// .show();
 				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
 					List<Map<String, String>> extraData = readDataFromDatabase();
 					adapter.getData().addAll(extraData);
@@ -176,23 +170,6 @@ public class TuguaFragment extends Fragment {
 				}
 			}
 		});
-		// listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-		//
-		// @Override
-		// public boolean onItemLongClick(AdapterView<?> parent, View view, int
-		// position, long id) {
-		// Log.d("ITEM", "Item was long clicked: " + position);
-		// Toast.makeText(getActivity(), "Item long clicked,  positon: " +
-		// position + "  id: " + id,
-		// Toast.LENGTH_SHORT).show();
-		// // listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-		//
-		// // listView.setAdapter(new ArrayAdapter<String>(getActivity(),
-		// // android.R.layout.simple_list_item_activated_1, new String[] {
-		// // "1", "2", "3" }));
-		// return true;
-		// }
-		// });
 		return root;
 	}
 
@@ -302,10 +279,6 @@ public class TuguaFragment extends Fragment {
 			}
 
 		} else {
-			// SimpleAdapter adapter = new SimpleAdapter(getActivity(), data,
-			// android.R.layout.simple_list_item_1,
-			// new String[] { DBConstants.ITEM_TITLE }, new int[] {
-			// android.R.id.text1 });
 			adapter = new PentiAdapter(getActivity(), data, DBConstants.ITEM_TITLE, Constants.LOAD_MORE);
 			listView.setAdapter(adapter);
 
@@ -328,6 +301,7 @@ public class TuguaFragment extends Fragment {
 	}
 
 	private List<Map<String, String>> readDataFromDatabase() {
+		// FIXME move database operation to AsyncTask
 		String limit = String.valueOf(recordCount);
 		Cursor cursor = dbhelper.getReadableDatabase().rawQuery(DBConstants.SELECT_TUGUA, new String[] { limit });
 		recordCount += cursor.getCount();
