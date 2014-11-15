@@ -1,38 +1,18 @@
 package net.dasherz.dapenti.activity;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.List;
-
 import net.dasherz.dapenti.R;
-import net.dasherz.dapenti.R.array;
-import net.dasherz.dapenti.R.id;
-import net.dasherz.dapenti.R.layout;
-import net.dasherz.dapenti.R.menu;
 import net.dasherz.dapenti.constant.Constants;
-import net.dasherz.dapenti.database.DBConstants;
-import net.dasherz.dapenti.database.PentiDatabaseHelper;
 import net.dasherz.dapenti.fragment.FavouriteFragment;
 import net.dasherz.dapenti.fragment.PictureFragment;
 import net.dasherz.dapenti.fragment.TuguaFragment;
 import net.dasherz.dapenti.fragment.TwitteFragment;
-import net.dasherz.dapenti.xml.TuguaXmlParser;
-import net.dasherz.dapenti.xml.TuguaXmlParser.TuguaItem;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -90,6 +70,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 	ViewPager mViewPager;
 	FragmentManager mFragmentManager = getSupportFragmentManager();
+	private boolean doubleBackToExitPressedOnce;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -168,5 +149,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	private static String makeFragmentName(int viewId, int index) {
 		return "android:switcher:" + viewId + ":" + index;
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (doubleBackToExitPressedOnce) {
+			super.onBackPressed();
+			return;
+		}
+
+		this.doubleBackToExitPressedOnce = true;
+		Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				doubleBackToExitPressedOnce = false;
+			}
+		}, 2000);
 	}
 }
