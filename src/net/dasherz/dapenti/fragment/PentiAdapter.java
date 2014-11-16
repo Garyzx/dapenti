@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.dasherz.dapenti.R;
+import net.dasherz.dapenti.database.DBConstants;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -72,7 +73,12 @@ public class PentiAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		return position;
+		if (position < getData().size()) {
+			return Integer.parseInt(getData().get(position).get(DBConstants.ITEM_ID));
+		} else {
+			return -1;
+
+		}
 	}
 
 	@Override

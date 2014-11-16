@@ -9,6 +9,7 @@ public class DBConstants {
 	public static final String ITEM_AUTHOR = "author";
 	public static final String ITEM_LINK = "link";
 	public static final String ITEM_TITLE = "title";
+	public static final String ITEM_ID = "_id";
 	public static final String ITEM_CONTENT_TYPE = "content_type";
 	public static final String ITEM_IS_FAVOURITE = "is_favourite";
 

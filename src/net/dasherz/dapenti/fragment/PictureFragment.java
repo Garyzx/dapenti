@@ -1,26 +1,25 @@
 package net.dasherz.dapenti.fragment;
 
-import net.dasherz.dapenti.R;
-import net.dasherz.dapenti.R.layout;
-import android.os.Bundle;
+import net.dasherz.dapenti.database.DBConstants;
 import android.support.v4.app.Fragment;
-import android.graphics.Color;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
  * 
  */
-public class PictureFragment extends Fragment {
+public class PictureFragment extends PentiBaseFragment {
+
+	// @Override
+	// public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	// Bundle savedInstanceState) {
+	// View root = inflater.inflate(R.layout.list, container, false);
+	// root.setBackgroundColor(Color.YELLOW);
+	// return root;
+	// }
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.list, container, false);
-		root.setBackgroundColor(Color.YELLOW);
-		return root;
+	int getContentType() {
+		return DBConstants.CONTENT_TYPE_PICTURE;
 	}
 
 }
