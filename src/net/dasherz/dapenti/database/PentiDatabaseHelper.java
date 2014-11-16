@@ -80,13 +80,13 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 			map.put(DBConstants.ITEM_PUB_DATE, cursor.getString(4));
 			String desc = cursor.getString(5);
 			if (cursor.getString(6).equals(String.valueOf(DBConstants.CONTENT_TYPE_TWITTE))) {
-				desc = convertHtmlToText(desc);
+				desc = convertHtmlToText(desc).trim();
 			}
 			map.put(DBConstants.ITEM_DESCRIPTION, desc);
 			map.put(DBConstants.ITEM_CONTENT_TYPE, cursor.getString(6));
 			data.add(map);
 		}
-		Log.d("DB", "current data size: " + data.size());
+		// Log.d("DB", "current data size: " + data.size());
 		cursor.close();
 		return data;
 	}
@@ -123,7 +123,8 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 		for (String id : idArray) {
 			this.getWritableDatabase().update(DBConstants.TABLE_TUGUA, values, "_id=?", new String[] { id });
 
-			Log.d("DB", "update tugua_item set is_favourite =1 where _id = " + id);
+			// Log.d("DB", "update tugua_item set is_favourite =1 where _id = "
+			// + id);
 		}
 	}
 

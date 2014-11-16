@@ -1,5 +1,6 @@
 package net.dasherz.dapenti.fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -181,6 +182,13 @@ public class FavouriteFragment extends Fragment {
 		 */
 		@Override
 		protected List<Map<String, String>> doInBackground(Void... params) {
+			// FIXME When browsering fav items, goto other tab, add one new item
+			// to fav, then change back to fav. Click load more items, error
+			// will happen, because the item's location in the query changes.
+			// Currently no good solution, Refresh all list is bad, user will
+			// lost item been reviewing. Not refresh will cause same item been
+			// show twice.
+			// Manually refresh will solve this.
 			if (dbhelper.getCountForFav() == 0) {
 				Log.d("DB", "No data for fav");
 				return null;
@@ -188,8 +196,27 @@ public class FavouriteFragment extends Fragment {
 			List<Map<String, String>> data = dbhelper.readItems(-1, recordCount, recordCount
 					+ DBConstants.ROW_COUNT_EVERY_READ);
 			recordCount += data.size();
+
+			if (adapter == null) {
+				isRefreshing = false;
+				return data;
+			}
+			// if the data is not in exist list, so add it to available set,
+			// remove exist ones
+			List<Map<String, String>> availableData = new ArrayList<>();
+			List<String> existIds = new ArrayList<>();
+			for (Map<String, String> existRow : adapter.getData()) {
+				existIds.add(existRow.get(DBConstants.ITEM_ID));
+			}
+			for (Map<String, String> row : data) {
+				if (!existIds.contains(row.get(DBConstants.ITEM_ID))) {
+					availableData.add(row);
+				}
+
+			}
 			isRefreshing = false;
-			return data;
+			data = null;
+			return availableData;
 		}
 
 		@Override
@@ -203,7 +230,7 @@ public class FavouriteFragment extends Fragment {
 			if (data.size() == 0) {
 				adapter.setFooter(Constants.NO_MORE_NEW);
 				adapter.notifyDataSetChanged();
-				Toast.makeText(getActivity(), "没有更多数据了", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), "没有更多数据了，刷新试试", Toast.LENGTH_SHORT).show();
 				return;
 			}
 			if (adapter == null) {
