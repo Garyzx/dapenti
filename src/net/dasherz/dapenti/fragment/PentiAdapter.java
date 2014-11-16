@@ -21,14 +21,12 @@ public class PentiAdapter extends BaseAdapter {
 
 	private final Context ctx;
 	private final List<Map<String, String>> data;
-	private final String itemName;
 	private String footer;
 
-	public PentiAdapter(Context ctx, List<Map<String, String>> data, String itemName, String footer) {
+	public PentiAdapter(Context ctx, List<Map<String, String>> data, String footer) {
 		super();
 		this.ctx = ctx;
 		this.data = data;
-		this.itemName = itemName;
 		this.footer = footer;
 	}
 
@@ -64,7 +62,12 @@ public class PentiAdapter extends BaseAdapter {
 	@Override
 	public Object getItem(int position) {
 		if (position < getData().size()) {
-			return getData().get(position).get(itemName);
+			if (getData().get(position).get(DBConstants.ITEM_CONTENT_TYPE)
+					.equals(String.valueOf(DBConstants.CONTENT_TYPE_TWITTE))) {
+				return getData().get(position).get(DBConstants.ITEM_DESCRIPTION);
+			} else {
+				return getData().get(position).get(DBConstants.ITEM_TITLE);
+			}
 		} else {
 			return getFooter();
 
@@ -89,7 +92,7 @@ public class PentiAdapter extends BaseAdapter {
 		TextView textView = (TextView) entry.findViewById(R.id.tugua_entry);
 		// textView.setBackgroundResource(R.drawable.bkg);
 		if (position < getData().size()) {
-			textView.setText(getData().get(position).get(itemName));
+			textView.setText(getItem(position).toString());
 		} else {
 			textView.setText(getFooter());
 			textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);

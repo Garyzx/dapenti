@@ -120,10 +120,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return true;
 		}
 		if (id == R.id.refresh) {
-			PentiBaseFragment pentiFragment = (PentiBaseFragment) getActiveFragment(mViewPager, getActionBar()
-					.getSelectedTab().getPosition());
-			pentiFragment.getLatestData();
-			return true;
+			if (getActionBar().getSelectedTab().getPosition() < 3) {
+				PentiBaseFragment pentiFragment = (PentiBaseFragment) getActiveFragment(mViewPager, getActionBar()
+						.getSelectedTab().getPosition());
+				pentiFragment.getLatestData();
+				return true;
+			} else {
+				FavouriteFragment pentiFragment = (FavouriteFragment) getActiveFragment(mViewPager, 3);
+				pentiFragment.getLatestData();
+				return true;
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}

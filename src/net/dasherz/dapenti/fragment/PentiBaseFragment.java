@@ -195,6 +195,11 @@ public abstract class PentiBaseFragment extends Fragment {
 				Log.d("ERROR", "Can't find proper url for this type.");
 				break;
 			}
+			Log.d("UPDATE", "Updating for content type: " + getContentType());
+			// if url is not found, just reload the list
+			if (url == null) {
+				return 1;
+			}
 			InputStream stream = null;
 			PentiXmlParser xmlParser = new PentiXmlParser();
 			List<net.dasherz.dapenti.xml.PentiItem> items = null;
@@ -275,7 +280,7 @@ public abstract class PentiBaseFragment extends Fragment {
 				if (getContentType() == DBConstants.CONTENT_TYPE_TWITTE) {
 					itemName = DBConstants.ITEM_DESCRIPTION;
 				}
-				adapter = new PentiAdapter(getActivity(), data, itemName, Constants.LOAD_MORE);
+				adapter = new PentiAdapter(getActivity(), data, Constants.LOAD_MORE);
 				listView.setAdapter(adapter);
 			} else {
 				adapter.getData().addAll(data);

@@ -51,6 +51,11 @@ public class NetUtil {
 				if (line.contains("<IMG") && !line.contains("gif")) {
 					line = line.replace("<IMG", "<IMG width=\"100%\"");
 				}
+				if (line.contains("<img") && !line.contains("gif")) {
+					line = line.replace("<img", "<img width=\"100%\"");
+				}
+				line = line.replace("<p>&nbsp;</p>", "").replace(
+						"<p><strong><font size=\"3\"></font></strong>&nbsp;</p>", "");
 				// contents.add(line);
 				sb.append(line);
 			}

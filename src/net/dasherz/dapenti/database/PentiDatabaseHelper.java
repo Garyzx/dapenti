@@ -37,15 +37,15 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 					new String[] { DBConstants.ITEM_TITLE }, "title=?", new String[] { item.getTitle() }, null, null,
 					null, null);
 			if (cursor.getCount() == 0) {
-				ContentValues valus = new ContentValues();
-				valus.put(DBConstants.ITEM_TITLE, item.getTitle());
-				valus.put(DBConstants.ITEM_LINK, item.getLink());
-				valus.put(DBConstants.ITEM_AUTHOR, item.getAuthor());
-				valus.put(DBConstants.ITEM_PUB_DATE, item.getPubDate());
-				valus.put(DBConstants.ITEM_DESCRIPTION, item.getDescription());
-				valus.put(DBConstants.ITEM_CONTENT_TYPE, String.valueOf(contentType));
-
-				this.getWritableDatabase().insert(DBConstants.TABLE_TUGUA, null, valus);
+				ContentValues values = new ContentValues();
+				values.put(DBConstants.ITEM_TITLE, item.getTitle());
+				values.put(DBConstants.ITEM_LINK, item.getLink());
+				values.put(DBConstants.ITEM_AUTHOR, item.getAuthor());
+				values.put(DBConstants.ITEM_PUB_DATE, item.getPubDate());
+				values.put(DBConstants.ITEM_DESCRIPTION, item.getDescription());
+				values.put(DBConstants.ITEM_CONTENT_TYPE, String.valueOf(contentType));
+				values.put(DBConstants.ITEM_IS_FAVOURITE, "0");
+				this.getWritableDatabase().insert(DBConstants.TABLE_TUGUA, null, values);
 				itemUpdated++;
 				Log.d("DB", "insert new record: " + item.getTitle());
 			}
@@ -57,9 +57,19 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 	public List<Map<String, String>> readItems(int contentType, int from, int to) {
 		String offset = String.valueOf(from);
 		String limit = String.valueOf(to - from);
-		String type = String.valueOf(contentType);
-		Cursor cursor = this.getReadableDatabase().rawQuery(DBConstants.SELECT_TUGUA,
-				new String[] { type, limit, offset });
+		String type;
+		Cursor cursor;
+		// for favorite
+		if (contentType == -1) {
+			cursor = this.getReadableDatabase().rawQuery(
+					"select * from tugua_item where is_favourite='1' order by pubDate DESC  Limit ? Offset ?",
+					new String[] { limit, offset });
+		} else {
+			type = String.valueOf(contentType);
+			cursor = this.getReadableDatabase()
+					.rawQuery(DBConstants.SELECT_TUGUA, new String[] { type, limit, offset });
+		}
+
 		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 		while (cursor.moveToNext()) {
 			Map<String, String> map = new HashMap<String, String>();
@@ -69,7 +79,7 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 			map.put(DBConstants.ITEM_AUTHOR, cursor.getString(3));
 			map.put(DBConstants.ITEM_PUB_DATE, cursor.getString(4));
 			String desc = cursor.getString(5);
-			if (contentType == DBConstants.CONTENT_TYPE_TWITTE) {
+			if (cursor.getString(6).equals(String.valueOf(DBConstants.CONTENT_TYPE_TWITTE))) {
 				desc = convertHtmlToText(desc);
 			}
 			map.put(DBConstants.ITEM_DESCRIPTION, desc);
@@ -96,9 +106,26 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void addToFav(String ids) {
-		this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id in ( ?)",
-				new String[] { ids });
-		Log.d("DB", "update tugua_item set is_favourite =1 where _id = " + ids);
+		// this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id in ( ?)",
+		// new String[] { ids });
+		String[] idArray = ids.split(",");
+		ContentValues values = new ContentValues();
+		values.put("is_favourite", "1");
+		for (String id : idArray) {
+			this.getWritableDatabase().update(DBConstants.TABLE_TUGUA, values, "_id=?", new String[] { id });
+
+			// .ex(("update tugua_item set is_favourite = '1' where _id = ?;",
+			// new String[] { id });
+			Log.d("DB", "update tugua_item set is_favourite =1 where _id = " + id);
+		}
+		// Log.d("DB", "update tugua_item set is_favourite =1 where _id = " +
+		// id);
+	}
+
+	public int getCountForFav() {
+		Cursor cursor = this.getReadableDatabase().rawQuery(
+				"select * from tugua_item where is_favourite='1' order by pubDate DESC;", null);
+		return cursor.getCount();
 	}
 
 }
