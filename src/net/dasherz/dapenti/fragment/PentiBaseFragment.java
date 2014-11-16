@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.dasherz.dapenti.R;
-import net.dasherz.dapenti.activity.TuguaDetailActivity;
+import net.dasherz.dapenti.activity.PentiDetailActivity;
 import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
@@ -152,7 +152,8 @@ public abstract class PentiBaseFragment extends Fragment {
 				if (position < adapter.getCount() - 1 && adapter.getData().get(position) instanceof Map) {
 					Map<String, String> item = adapter.getData().get(position);
 					Log.d("TUGUA", "Opening new activity to show web page");
-					Intent intent = new Intent(getActivity(), TuguaDetailActivity.class);
+					Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
+					intent.putExtra(DBConstants.ITEM_ID, item.get(DBConstants.ITEM_ID));
 					intent.putExtra(DBConstants.ITEM_TITLE, item.get(DBConstants.ITEM_TITLE));
 					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.get(DBConstants.ITEM_DESCRIPTION));
 					intent.putExtra(DBConstants.ITEM_LINK, item.get(DBConstants.ITEM_LINK));
@@ -276,10 +277,6 @@ public abstract class PentiBaseFragment extends Fragment {
 				return;
 			}
 			if (adapter == null) {
-				String itemName = DBConstants.ITEM_TITLE;
-				if (getContentType() == DBConstants.CONTENT_TYPE_TWITTE) {
-					itemName = DBConstants.ITEM_DESCRIPTION;
-				}
 				adapter = new PentiAdapter(getActivity(), data, Constants.LOAD_MORE);
 				listView.setAdapter(adapter);
 			} else {
@@ -294,7 +291,7 @@ public abstract class PentiBaseFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			Toast.makeText(getActivity(), "已经添加到收藏。", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), "已经添加到收藏", Toast.LENGTH_SHORT).show();
 		}
 
 		@Override

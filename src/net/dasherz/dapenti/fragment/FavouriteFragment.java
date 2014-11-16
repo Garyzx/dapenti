@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.dasherz.dapenti.R;
-import net.dasherz.dapenti.activity.TuguaDetailActivity;
+import net.dasherz.dapenti.activity.PentiDetailActivity;
 import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
@@ -49,6 +49,7 @@ public class FavouriteFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.list, container, false);
 		mListView = (ListView) root.findViewById(R.id.pentiListView);
+		mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		mListView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
 			int checkedItemCount = 0;
 
@@ -66,7 +67,7 @@ public class FavouriteFragment extends Fragment {
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 				MenuInflater inflater = getActivity().getMenuInflater();
-				inflater.inflate(R.menu.list_select_menu, menu);
+				inflater.inflate(R.menu.menu_fav, menu);
 				return true;
 			}
 
@@ -82,6 +83,14 @@ public class FavouriteFragment extends Fragment {
 					ClipData clip = ClipData.newPlainText("titles", buffer.toString());
 					clipboard.setPrimaryClip(clip);
 					Toast.makeText(getActivity(), "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
+				} else if (item.getItemId() == R.id.remove_favourite) {
+					StringBuffer buffer = new StringBuffer();
+
+					for (Integer integer : adapter.getCurrentCheckedPosition()) {
+						buffer.append(adapter.getItemId(integer)).append(",");
+					}
+					buffer.deleteCharAt(buffer.length() - 1);
+					new RemoveFromFavTask().execute(buffer.toString());
 				}
 				mode.finish();
 				return true;
@@ -137,7 +146,7 @@ public class FavouriteFragment extends Fragment {
 				if (position < adapter.getCount() - 1 && adapter.getData().get(position) instanceof Map) {
 					Map<String, String> item = adapter.getData().get(position);
 					Log.d("TUGUA", "Opening new activity to show web page");
-					Intent intent = new Intent(getActivity(), TuguaDetailActivity.class);
+					Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
 					intent.putExtra(DBConstants.ITEM_ID, item.get(DBConstants.ITEM_ID));
 					intent.putExtra(DBConstants.ITEM_TITLE, item.get(DBConstants.ITEM_TITLE));
 					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.get(DBConstants.ITEM_DESCRIPTION));
@@ -187,7 +196,7 @@ public class FavouriteFragment extends Fragment {
 		protected void onPostExecute(List<Map<String, String>> data) {
 			if (data == null) {
 				mListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-						new String[] { "没有更多数据了" }));
+						new String[] { "没有数据" }));
 				isRefreshing = false;
 				return;
 			}
@@ -205,6 +214,21 @@ public class FavouriteFragment extends Fragment {
 				adapter.notifyDataSetChanged();
 			}
 
+		}
+	}
+
+	public class RemoveFromFavTask extends AsyncTask<String, Void, Void> {
+
+		@Override
+		protected Void doInBackground(String... ids) {
+			dbhelper.removeFromFav(ids[0]);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			Toast.makeText(getActivity(), "已经从收藏中移除。", Toast.LENGTH_SHORT).show();
+			getLatestData();
 		}
 	}
 }

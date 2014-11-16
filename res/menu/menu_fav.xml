@@ -4,14 +4,14 @@
     tools:context="net.dasherz.dapenti.MainActivity" >
 
     <item
-        android:id="@+id/add_favourite"
+        android:id="@+id/remove_favourite"
         android:orderInCategory="100"
-        android:title="@string/add_favourite"
+        android:title="@string/remove_favourite"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/copy_title"
+        android:id="@+id/copy_text"
         android:orderInCategory="200"
-        android:title="@string/copy_text"
+        android:title="@string/copy_title"
         app:showAsAction="ifRoom"/>
     
 </menu>

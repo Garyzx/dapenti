@@ -106,20 +106,29 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	public void addToFav(String ids) {
-		// this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id in ( ?)",
-		// new String[] { ids });
+		setFavValueForItem(ids, 1);
+	}
+
+	/**
+	 * 
+	 * @param ids
+	 *            ids of items
+	 * @param value
+	 *            fav flag, 0 for not fav, 1 for fav
+	 */
+	private void setFavValueForItem(String ids, int value) {
 		String[] idArray = ids.split(",");
 		ContentValues values = new ContentValues();
-		values.put("is_favourite", "1");
+		values.put("is_favourite", String.valueOf(value));
 		for (String id : idArray) {
 			this.getWritableDatabase().update(DBConstants.TABLE_TUGUA, values, "_id=?", new String[] { id });
 
-			// .ex(("update tugua_item set is_favourite = '1' where _id = ?;",
-			// new String[] { id });
 			Log.d("DB", "update tugua_item set is_favourite =1 where _id = " + id);
 		}
-		// Log.d("DB", "update tugua_item set is_favourite =1 where _id = " +
-		// id);
+	}
+
+	public void removeFromFav(String ids) {
+		setFavValueForItem(ids, 0);
 	}
 
 	public int getCountForFav() {

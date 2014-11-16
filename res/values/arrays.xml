@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string-array name="tab_name_list">
+<string-array name="tab_name_list" translatable="false">
 	<item>图卦</item>
 	<item>段子</item>
 	<item>意图</item>
 	<item>收藏</item>
 </string-array>
-<string-array name="tab_name_values">
+<string-array name="tab_name_values" translatable="false">
 	<item>0</item>
 	<item>1</item>
 	<item>2</item>
