@@ -2,7 +2,6 @@ package net.dasherz.dapenti.fragment;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -91,23 +90,15 @@ public abstract class PentiBaseFragment extends Fragment {
 					clipboard.setPrimaryClip(clip);
 					Toast.makeText(getActivity(), "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
 				} else if (item.getItemId() == R.id.add_favourite) {
-					// TODO
-					final List<Long> favItemId = new ArrayList<>();
+					StringBuffer buffer = new StringBuffer();
+
 					for (Integer integer : adapter.getCurrentCheckedPosition()) {
-						favItemId.add(adapter.getItemId(integer));
+						buffer.append(adapter.getItemId(integer)).append(",");
 					}
-					new Thread() {
+					buffer.deleteCharAt(buffer.length() - 1);
+					new AddToFavTask().execute(buffer.toString());
 
-						@Override
-						public void run() {
-							dbhelper.addToFav(favItemId);
-						}
-					}.start();
-
-					Toast.makeText(getActivity(), "已经添加到收藏。", Toast.LENGTH_SHORT).show();
 				}
-				// Toast.makeText(getActivity(), "add fav clicked.",
-				// Toast.LENGTH_SHORT).show();
 				mode.finish();
 				return true;
 			}
@@ -292,6 +283,23 @@ public abstract class PentiBaseFragment extends Fragment {
 			}
 
 		}
+	}
+
+	public class AddToFavTask extends AsyncTask<String, Void, Void> {
+
+		@Override
+		protected void onPostExecute(Void result) {
+			Toast.makeText(getActivity(), "已经添加到收藏。", Toast.LENGTH_SHORT).show();
+		}
+
+		@Override
+		protected Void doInBackground(String... params) {
+
+			dbhelper.addToFav(params[0]);
+			return null;
+
+		}
+
 	}
 
 }

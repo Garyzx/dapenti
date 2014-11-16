@@ -95,22 +95,10 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 		return cursor.getCount();
 	}
 
-	public void addToFav(List<Long> favItemId) {
-		// StringBuffer buffer = new StringBuffer();
-		// buffer.append("(");
-		// for (Long id : favItemId) {
-		// buffer.append(id).append(",");
-		// }
-		// buffer.deleteCharAt(buffer.length() - 1);
-		// buffer.append(")");
-		// Log.d("DB", buffer.toString());
-		// this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id in ?",
-		// new String[] { buffer.toString() });
-
-		for (Long id : favItemId) {
-			this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id = ?",
-					new String[] { id.toString() });
-		}
+	public void addToFav(String ids) {
+		this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id in ( ?)",
+				new String[] { ids });
+		Log.d("DB", "update tugua_item set is_favourite =1 where _id = " + ids);
 	}
 
 }
