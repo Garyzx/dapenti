@@ -92,11 +92,18 @@ public abstract class PentiBaseFragment extends Fragment {
 					Toast.makeText(getActivity(), "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
 				} else if (item.getItemId() == R.id.add_favourite) {
 					// TODO
-					List<Long> favItemId = new ArrayList<>();
+					final List<Long> favItemId = new ArrayList<>();
 					for (Integer integer : adapter.getCurrentCheckedPosition()) {
 						favItemId.add(adapter.getItemId(integer));
 					}
-					dbhelper.addToFav(favItemId);
+					new Thread() {
+
+						@Override
+						public void run() {
+							dbhelper.addToFav(favItemId);
+						}
+					}.start();
+
 					Toast.makeText(getActivity(), "已经添加到收藏。", Toast.LENGTH_SHORT).show();
 				}
 				// Toast.makeText(getActivity(), "add fav clicked.",
