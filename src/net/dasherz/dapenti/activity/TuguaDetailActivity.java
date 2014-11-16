@@ -3,16 +3,12 @@ package net.dasherz.dapenti.activity;
 import java.io.IOException;
 
 import net.dasherz.dapenti.R;
-import net.dasherz.dapenti.R.id;
-import net.dasherz.dapenti.R.layout;
-import net.dasherz.dapenti.R.menu;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.util.NetUtil;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,7 +16,6 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,8 +44,6 @@ public class TuguaDetailActivity extends Activity {
 		titleView.setText(title);
 		boolean whetherBlockImage = NetUtil.whetherBlockImage(this);
 		tuguaWebView.getSettings().setBlockNetworkImage(whetherBlockImage);
-		// tuguaWebView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
-		// tuguaWebView.loadUrl(url);
 		new LoadPageTask().execute(url);
 	}
 
@@ -59,20 +52,11 @@ public class TuguaDetailActivity extends Activity {
 		@Override
 		protected String doInBackground(String... params) {
 			String lines = null;
-			// StringBuffer buffer = new StringBuffer();
 			try {
 				lines = NetUtil.getContentOfURL(params[0]);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			// for (int i = 0; i < lines.size(); i++) {
-			// String line = lines.get(i);
-			//
-			// if (line.contains("<IMG") && !line.contains("gif")) {
-			// line = line.replace("<IMG", "<IMG width=\"100%\"");
-			// }
-			// buffer.append(line);
-			// }
 			if (lines == null) {
 				lines = "获取数据失败。";
 			}
@@ -84,8 +68,6 @@ public class TuguaDetailActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(String result) {
-			// tuguaWebView.loadData(new String((result.getBytes("UTF-8"))),
-			// "text/html", "UTF-8");
 			tuguaWebView.loadData(result, "text/html; charset=UTF-8", null);
 			progressBar.setVisibility(View.GONE);
 		}

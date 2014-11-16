@@ -96,7 +96,6 @@ public class TwitteFragment extends Fragment {
 
 			@Override
 			public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-				Toast.makeText(getActivity(), "onItemCheckedStateChanged.", Toast.LENGTH_SHORT).show();
 				if (checked) {
 					checkitemCount++;
 					adapter.setNewSelection(position, checked);
@@ -132,19 +131,7 @@ public class TwitteFragment extends Fragment {
 				}
 				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
 					new LoadTwitteTask().execute();
-				} else if (position < adapter.getCount() - 1 && adapter.getData().get(position) instanceof Map) {
-					// Map<String, String> item =
-					// adapter.getData().get(position);
-					// Log.d("TEST", item.toString());
-					// Intent intent = new Intent(getActivity(),
-					// TuguaDetailActivity.class);
-					// intent.putExtra(DBConstants.ITEM_TITLE,
-					// item.get(DBConstants.ITEM_TITLE));
-					// intent.putExtra(DBConstants.ITEM_DESCRIPTION,
-					// item.get(DBConstants.ITEM_DESCRIPTION));
-					// intent.putExtra(DBConstants.ITEM_LINK,
-					// item.get(DBConstants.ITEM_LINK));
-					// startActivity(intent);
+					return;
 				}
 			}
 		});
@@ -225,7 +212,7 @@ public class TwitteFragment extends Fragment {
 
 			} else {
 				if (adapter == null) {
-					adapter = new PentiAdapter(getActivity(), data, DBConstants.ITEM_TITLE, Constants.LOAD_MORE);
+					adapter = new PentiAdapter(getActivity(), data, DBConstants.ITEM_DESCRIPTION, Constants.LOAD_MORE);
 					listView.setAdapter(adapter);
 				} else {
 					adapter.getData().addAll(data);

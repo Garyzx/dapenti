@@ -67,12 +67,25 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 			map.put(DBConstants.ITEM_LINK, cursor.getString(2));
 			map.put(DBConstants.ITEM_AUTHOR, cursor.getString(3));
 			map.put(DBConstants.ITEM_PUB_DATE, cursor.getString(4));
-			map.put(DBConstants.ITEM_DESCRIPTION, cursor.getString(5));
+			String desc = cursor.getString(5);
+			if (contentType == DBConstants.CONTENT_TYPE_TWITTE) {
+				desc = convertHtmlToText(desc);
+			}
+			map.put(DBConstants.ITEM_DESCRIPTION, desc);
+			map.put(DBConstants.ITEM_CONTENT_TYPE, cursor.getString(6));
 			data.add(map);
 		}
 		Log.d("DB", "current data size: " + data.size());
 		cursor.close();
 		return data;
+	}
+
+	private String convertHtmlToText(String desc) {
+		desc = desc.replaceAll("<DIV.+?>", "").replaceAll("</DIV>", "").replaceAll("<A.+?>", "").replaceAll("</A>", "")
+				.replaceAll("<I.+?>", "").replaceAll("</I>", "").replaceAll("<EM.+?>", "").replaceAll("</EM>", "")
+				.replaceAll("<FONT.+?>", "").replaceAll("</FONT>", "").replaceAll("&nbsp;", " ")
+				.replaceAll("&#8943;", "--");
+		return desc;
 	}
 
 	public int getCountForType(int contentType) {

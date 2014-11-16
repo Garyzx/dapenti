@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import net.dasherz.dapenti.activity.TuguaDetailActivity;
 import net.dasherz.dapenti.constant.Constants;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -90,9 +89,6 @@ public class NetUtil {
 		boolean loadPictureUnderWIFI = settings.getBoolean("loadPictureUnderWIFI", true);
 		boolean isUnderWIFI = getNetworkMode(ctx);
 
-		Log.d("IMAGE", "" + loadPicture);
-		Log.d("IMAGE", "" + loadPictureUnderWIFI);
-		Log.d("IMAGE", "" + isUnderWIFI);
 		if (!loadPicture) {
 			return true;
 		} else {

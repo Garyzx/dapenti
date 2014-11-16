@@ -150,13 +150,6 @@ public class TuguaFragment extends Fragment {
 					return;
 				}
 				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
-					// List<Map<String, String>> extraData =
-					// readDataFromDatabase();
-					// adapter.getData().addAll(extraData);
-					// if (extraData.size() == 0) {
-					// adapter.setFooter(Constants.NO_MORE_NEW);
-					// }
-					// adapter.notifyDataSetChanged();
 					new LoadTuguaTask().execute();
 				} else if (position < adapter.getCount() - 1 && adapter.getData().get(position) instanceof Map) {
 					Map<String, String> item = adapter.getData().get(position);
@@ -172,39 +165,6 @@ public class TuguaFragment extends Fragment {
 		return root;
 	}
 
-	// private void loadList() {
-	//
-	// List<Map<String, String>> data = readDataFromDatabase();
-	// if (data.size() == 0) {
-	// if (isTableEmpty()) {
-	// listView.setAdapter(new ArrayAdapter<String>(getActivity(),
-	// android.R.layout.simple_list_item_1,
-	// new String[] { "正在加载..." }));
-	// getLatestData();
-	// } else {
-	// Toast.makeText(getActivity(), "没有更多数据了", Toast.LENGTH_SHORT).show();
-	// }
-	//
-	// } else {
-	// adapter = new PentiAdapter(getActivity(), data, DBConstants.ITEM_TITLE,
-	// Constants.LOAD_MORE);
-	// listView.setAdapter(adapter);
-	//
-	// }
-	// }
-
-	// private boolean isTableEmpty() {
-	// Cursor cursor =
-	// dbhelper.getReadableDatabase().rawQuery(DBConstants.SELECT_TUGUA_ALL,
-	// null);
-	// return cursor.getCount() == 0;
-	// }
-
-	// public void reloadList() {
-	// loadList();
-	// Log.d("TEST", "reload invoked.");
-	// }
-
 	public void getLatestData() {
 		if (!isRefreshing) {
 			isRefreshing = true;
@@ -213,28 +173,6 @@ public class TuguaFragment extends Fragment {
 		}
 
 	}
-
-	// private List<Map<String, String>> readDataFromDatabase() {
-	// // FIXME move database operation to AsyncTask
-	// String limit = String.valueOf(recordCount);
-	// Cursor cursor =
-	// dbhelper.getReadableDatabase().rawQuery(DBConstants.SELECT_TUGUA, new
-	// String[] { limit });
-	// recordCount += cursor.getCount();
-	// List<Map<String, String>> data = new ArrayList<Map<String, String>>();
-	// while (cursor.moveToNext()) {
-	// Map<String, String> map = new HashMap<String, String>();
-	// map.put(DBConstants.ITEM_TITLE, cursor.getString(1));
-	// map.put(DBConstants.ITEM_LINK, cursor.getString(2));
-	// map.put(DBConstants.ITEM_AUTHOR, cursor.getString(3));
-	// map.put(DBConstants.ITEM_PUB_DATE, cursor.getString(4));
-	// map.put(DBConstants.ITEM_DESCRIPTION, cursor.getString(5));
-	// data.add(map);
-	// }
-	// Log.d("DB", "total size: " + data.size());
-	// cursor.close();
-	// return data;
-	// }
 
 	private class GetNewTuguaTask extends AsyncTask<String, Void, Integer> {
 
@@ -286,51 +224,6 @@ public class TuguaFragment extends Fragment {
 			}
 			swipeLayout.setRefreshing(false);
 			isRefreshing = false;
-			// if (items == null) {
-			// Toast.makeText(getActivity(), "更新出错了",
-			// Toast.LENGTH_SHORT).show();
-			// swipeLayout.setRefreshing(false);
-			// isRefreshing = false;
-			// return;
-			// }
-			// int itemUpdated = 0;
-			// PentiDatabaseHelper dbhelper = new
-			// PentiDatabaseHelper(getActivity(), DBConstants.DATABASE_NAME,
-			// null,
-			// DBConstants.version);
-			// //
-			// dbhelper.getWritableDatabase().execSQL("delete from tugua_item");
-			// for (TuguaItem item : items) {
-			// Cursor cursor = dbhelper.getReadableDatabase().query(false,
-			// DBConstants.TABLE_TUGUA,
-			// new String[] { DBConstants.ITEM_TITLE }, "title=?", new String[]
-			// { item.getTitle() }, null,
-			// null, null, null);
-			// if (cursor.getCount() == 0) {
-			// ContentValues valus = new ContentValues();
-			// valus.put(DBConstants.ITEM_TITLE, item.getTitle());
-			// valus.put(DBConstants.ITEM_LINK, item.getLink());
-			// valus.put(DBConstants.ITEM_AUTHOR, item.getAuthor());
-			// valus.put(DBConstants.ITEM_PUB_DATE, item.getPubDate());
-			// valus.put(DBConstants.ITEM_DESCRIPTION, item.getDescription());
-			// dbhelper.getWritableDatabase().insert(DBConstants.TABLE_TUGUA,
-			// null, valus);
-			// itemUpdated++;
-			// Log.d("DB", "insert new record: " + item.getTitle());
-			// }
-			// cursor.close();
-			// }
-			// dbhelper.close();
-			// if (itemUpdated > 0) {
-			// // load from beginning
-			// recordCount = 0;
-			// reloadList();
-			// } else {
-			// Toast.makeText(getActivity(), "已经是最新了",
-			// Toast.LENGTH_SHORT).show();
-			// }
-			// swipeLayout.setRefreshing(false);
-			// isRefreshing = false;
 		}
 	}
 
