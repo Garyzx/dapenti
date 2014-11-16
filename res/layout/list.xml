@@ -12,13 +12,13 @@
         android:layout_height="match_parent" >
 
         <ListView
-            android:id="@+id/tuguaListView"
+            android:id="@+id/pentiListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:dividerHeight="1dp" 
-            android:listSelector="@drawable/bkg" 
-            >
+            android:dividerHeight="1dp"
+            android:listSelector="@drawable/bkg" >
+
         </ListView>
     </android.support.v4.widget.SwipeRefreshLayout>
 

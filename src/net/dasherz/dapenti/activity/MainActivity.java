@@ -3,6 +3,7 @@ package net.dasherz.dapenti.activity;
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.fragment.FavouriteFragment;
+import net.dasherz.dapenti.fragment.PentiBaseFragment;
 import net.dasherz.dapenti.fragment.PictureFragment;
 import net.dasherz.dapenti.fragment.TuguaFragment;
 import net.dasherz.dapenti.fragment.TwitteFragment;
@@ -119,8 +120,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return true;
 		}
 		if (id == R.id.refresh) {
-			TuguaFragment tuguaFragment = (TuguaFragment) getActiveFragment(mViewPager, 0);
-			tuguaFragment.getLatestData();
+			PentiBaseFragment pentiFragment = (PentiBaseFragment) getActiveFragment(mViewPager, getActionBar()
+					.getSelectedTab().getPosition());
+			pentiFragment.getLatestData();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -63,6 +63,7 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 		while (cursor.moveToNext()) {
 			Map<String, String> map = new HashMap<String, String>();
+			map.put(DBConstants.ITEM_ID, cursor.getString(0));
 			map.put(DBConstants.ITEM_TITLE, cursor.getString(1));
 			map.put(DBConstants.ITEM_LINK, cursor.getString(2));
 			map.put(DBConstants.ITEM_AUTHOR, cursor.getString(3));
@@ -92,6 +93,24 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 		Cursor cursor = this.getReadableDatabase().rawQuery(DBConstants.SELECT_TUGUA_ALL,
 				new String[] { String.valueOf(contentType) });
 		return cursor.getCount();
+	}
+
+	public void addToFav(List<Long> favItemId) {
+		// StringBuffer buffer = new StringBuffer();
+		// buffer.append("(");
+		// for (Long id : favItemId) {
+		// buffer.append(id).append(",");
+		// }
+		// buffer.deleteCharAt(buffer.length() - 1);
+		// buffer.append(")");
+		// Log.d("DB", buffer.toString());
+		// this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id in ?",
+		// new String[] { buffer.toString() });
+
+		for (Long id : favItemId) {
+			this.getWritableDatabase().rawQuery("update tugua_item set is_favourite =1 where _id = ?",
+					new String[] { id.toString() });
+		}
 	}
 
 }
