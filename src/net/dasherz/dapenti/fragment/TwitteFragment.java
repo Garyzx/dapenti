@@ -10,7 +10,7 @@ import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
 import net.dasherz.dapenti.util.NetUtil;
-import net.dasherz.dapenti.xml.TuguaXmlParser;
+import net.dasherz.dapenti.xml.PentiXmlParser;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.graphics.Color;
@@ -181,8 +181,8 @@ public class TwitteFragment extends Fragment {
 		@Override
 		protected Integer doInBackground(String... url) {
 			InputStream stream = null;
-			TuguaXmlParser xmlParser = new TuguaXmlParser();
-			List<net.dasherz.dapenti.xml.TuguaItem> items = null;
+			PentiXmlParser xmlParser = new PentiXmlParser();
+			List<net.dasherz.dapenti.xml.PentiItem> items = null;
 
 			try {
 				stream = NetUtil.downloadUrl(url[0]);

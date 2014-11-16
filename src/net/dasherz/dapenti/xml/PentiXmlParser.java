@@ -13,11 +13,11 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Xml;
 
-public class TuguaXmlParser {
+public class PentiXmlParser {
 
 	private static final String ns = null;
 
-	public List<TuguaItem> parse(InputStream in) throws XmlPullParserException, IOException, ParseException {
+	public List<PentiItem> parse(InputStream in) throws XmlPullParserException, IOException, ParseException {
 		try {
 			XmlPullParser parser = Xml.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -29,7 +29,7 @@ public class TuguaXmlParser {
 		}
 	}
 
-	private List<TuguaItem> readRss(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+	private List<PentiItem> readRss(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
 		parser.require(XmlPullParser.START_TAG, ns, "rss");
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -46,9 +46,9 @@ public class TuguaXmlParser {
 		return null;
 	}
 
-	private List<TuguaItem> readChannel(XmlPullParser parser) throws XmlPullParserException, IOException,
+	private List<PentiItem> readChannel(XmlPullParser parser) throws XmlPullParserException, IOException,
 			ParseException {
-		List<TuguaItem> items = new ArrayList<>();
+		List<PentiItem> items = new ArrayList<>();
 		parser.require(XmlPullParser.START_TAG, ns, "channel");
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -65,9 +65,9 @@ public class TuguaXmlParser {
 		return items;
 	}
 
-	private TuguaItem readItem(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+	private PentiItem readItem(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
 		parser.require(XmlPullParser.START_TAG, ns, "item");
-		TuguaItem item = new TuguaItem();
+		PentiItem item = new PentiItem();
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
 				continue;

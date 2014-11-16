@@ -12,8 +12,8 @@ import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
 import net.dasherz.dapenti.util.NetUtil;
-import net.dasherz.dapenti.xml.TuguaItem;
-import net.dasherz.dapenti.xml.TuguaXmlParser;
+import net.dasherz.dapenti.xml.PentiItem;
+import net.dasherz.dapenti.xml.PentiXmlParser;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -241,8 +241,8 @@ public class TuguaFragment extends Fragment {
 		@Override
 		protected Integer doInBackground(String... urls) {
 			InputStream stream = null;
-			TuguaXmlParser xmlParser = new TuguaXmlParser();
-			List<TuguaItem> items = null;
+			PentiXmlParser xmlParser = new PentiXmlParser();
+			List<PentiItem> items = null;
 
 			try {
 				stream = NetUtil.downloadUrl(urls[0]);

@@ -1,17 +1,17 @@
 package net.dasherz.dapenti.xml;
 
-public class TuguaItem {
+public class PentiItem {
 	private String title;
 	private String link;
 	private String author;
 	private long pubDate;
 	private String description;
 
-	public TuguaItem() {
+	public PentiItem() {
 		super();
 	}
 
-	public TuguaItem(String title, String link, String author, long pubDate, String description) {
+	public PentiItem(String title, String link, String author, long pubDate, String description) {
 		super();
 		this.title = title;
 		this.link = link;

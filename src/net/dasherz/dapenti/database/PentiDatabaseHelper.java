@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.dasherz.dapenti.xml.TuguaItem;
+import net.dasherz.dapenti.xml.PentiItem;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -30,9 +30,9 @@ public class PentiDatabaseHelper extends SQLiteOpenHelper {
 		Log.d("DB", "Currently no update.");
 	}
 
-	public int insertItemsIfNotExist(List<TuguaItem> items, int contentType) {
+	public int insertItemsIfNotExist(List<PentiItem> items, int contentType) {
 		int itemUpdated = 0;
-		for (TuguaItem item : items) {
+		for (PentiItem item : items) {
 			Cursor cursor = this.getReadableDatabase().query(false, DBConstants.TABLE_TUGUA,
 					new String[] { DBConstants.ITEM_TITLE }, "title=?", new String[] { item.getTitle() }, null, null,
 					null, null);
