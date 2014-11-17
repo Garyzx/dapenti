@@ -273,6 +273,8 @@ public abstract class PentiBaseFragment extends Fragment {
 				return;
 			}
 			if (data.size() == 0) {
+				adapter.setFooter(Constants.NO_MORE_NEW);
+				adapter.notifyDataSetChanged();
 				Toast.makeText(getActivity(), "没有更多数据了", Toast.LENGTH_SHORT).show();
 				return;
 			}
