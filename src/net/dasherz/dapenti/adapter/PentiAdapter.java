@@ -1,4 +1,4 @@
-package net.dasherz.dapenti.fragment;
+package net.dasherz.dapenti.adapter;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,12 +1,10 @@
 package net.dasherz.dapenti.activity;
 
 import net.dasherz.dapenti.R;
+import net.dasherz.dapenti.adapter.AppSectionsPagerAdapter;
 import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.fragment.FavouriteFragment;
 import net.dasherz.dapenti.fragment.PentiBaseFragment;
-import net.dasherz.dapenti.fragment.PictureFragment;
-import net.dasherz.dapenti.fragment.TuguaFragment;
-import net.dasherz.dapenti.fragment.TwitteFragment;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
@@ -17,7 +15,6 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -26,50 +23,11 @@ import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
-	public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
-
-		private static final int TAB_COUNT = 4;
-		private final String[] tabNames = getResources().getStringArray(R.array.tab_name_list);
-
-		public AppSectionsPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-
-		@Override
-		public Fragment getItem(int i) {
-			Fragment fragment = null;
-			switch (i) {
-			case 0:
-				fragment = new TuguaFragment();
-				break;
-			case 1:
-				fragment = new TwitteFragment();
-				break;
-			case 2:
-				fragment = new PictureFragment();
-				break;
-			case 3:
-				fragment = new FavouriteFragment();
-				break;
-
-			}
-			return fragment;
-		}
-
-		@Override
-		public int getCount() {
-			return TAB_COUNT;
-		}
-
-		@Override
-		public CharSequence getPageTitle(int position) {
-			return tabNames[position];
-		}
-
-	}
+	private final static int TAB_COUNT = 4;
 
 	AppSectionsPagerAdapter mAppSectionsPagerAdapter;
 	ViewPager mViewPager;
+	ActionBar mActionBar;
 	FragmentManager mFragmentManager = getSupportFragmentManager();
 	private boolean doubleBackToExitPressedOnce;
 
@@ -77,24 +35,31 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
-		final ActionBar actionBar = getActionBar();
-		actionBar.setHomeButtonEnabled(false);
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager(), getResources().getStringArray(R.array.tab_name_list),TAB_COUNT);
 		mViewPager = (ViewPager) findViewById(R.id.viewPager);
+		mActionBar = getActionBar();
+		initActionBar();
+		initViewpager();
+	}
+	
+	private void initActionBar(){
+		mActionBar.setHomeButtonEnabled(false);
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		
+		for (int i = 0; i < mAppSectionsPagerAdapter.getCount(); i++) {
+			mActionBar.addTab(mActionBar.newTab().setText(mAppSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
+		}
+	}
+	
+	private void initViewpager(){
 		mViewPager.setAdapter(mAppSectionsPagerAdapter);
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				actionBar.setSelectedNavigationItem(position);
+				mActionBar.setSelectedNavigationItem(position);
 			}
 		});
-		for (int i = 0; i < mAppSectionsPagerAdapter.getCount(); i++) {
-			actionBar.addTab(actionBar.newTab().setText(mAppSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
-		}
-
 		SharedPreferences settings = getSharedPreferences(Constants.PREFERENCE_NAME, MODE_PRIVATE);
-
 		mViewPager.setCurrentItem(Integer.parseInt(settings.getString("defaultChannel", "0")));
 		Log.d("SP", "" + settings.getString("defaultChannel", ""));
 		Log.d("SP", "" + settings.getBoolean("loadPicture", false));
@@ -113,13 +78,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		switch(item.getItemId()){
+		case R.id.action_settings:
 			Intent intent = new Intent(this, FragmentPreferences.class);
 			startActivity(intent);
 			return true;
-		}
-		if (id == R.id.refresh) {
+		case R.id.refresh:
 			if (getActionBar().getSelectedTab().getPosition() < 3) {
 				PentiBaseFragment pentiFragment = (PentiBaseFragment) getActiveFragment(mViewPager, getActionBar()
 						.getSelectedTab().getPosition());
@@ -130,8 +94,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				pentiFragment.getLatestData();
 				return true;
 			}
+		default:
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
+		
 	}
 
 	@Override

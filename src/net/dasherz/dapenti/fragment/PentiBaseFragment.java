@@ -7,6 +7,7 @@ import java.util.Map;
 
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.activity.PentiDetailActivity;
+import net.dasherz.dapenti.adapter.PentiAdapter;
 import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.PentiDatabaseHelper;
@@ -55,6 +56,23 @@ public abstract class PentiBaseFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.list, container, false);
 		listView = (ListView) root.findViewById(R.id.pentiListView);
+		handleForMultiChoiceMode();
+		handleForPullingDownRefresh(root);
+		if (adapter == null) {
+			listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
+					new String[] { "正在加载..." }));
+		} else {
+			listView.setAdapter(adapter);
+		}
+		handleForItemClick();
+		dbhelper = new PentiDatabaseHelper(getActivity(), DBConstants.DATABASE_NAME, null, DBConstants.version);
+		if (adapter == null) {
+			new LoadItemTask().execute();
+		}
+		return root;
+	}
+	
+	private void handleForMultiChoiceMode(){
 		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
 			int checkedItemCount = 0;
@@ -115,6 +133,9 @@ public abstract class PentiBaseFragment extends Fragment {
 				mode.setTitle(checkedItemCount + "个项目已选择");
 			}
 		});
+	}
+	
+	private void handleForPullingDownRefresh(View root){
 		swipeLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
 		swipeLayout.setColorSchemeColors(Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW);
 		swipeLayout.setOnRefreshListener(new OnRefreshListener() {
@@ -122,15 +143,11 @@ public abstract class PentiBaseFragment extends Fragment {
 			@Override
 			public void onRefresh() {
 				getLatestData();
-
 			}
 		});
-		if (adapter == null) {
-			listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-					new String[] { "正在加载..." }));
-		} else {
-			listView.setAdapter(adapter);
-		}
+	}
+	
+	private void handleForItemClick(){
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -162,11 +179,6 @@ public abstract class PentiBaseFragment extends Fragment {
 
 			}
 		});
-		dbhelper = new PentiDatabaseHelper(getActivity(), DBConstants.DATABASE_NAME, null, DBConstants.version);
-		if (adapter == null) {
-			new LoadItemTask().execute();
-		}
-		return root;
 	}
 
 	public void getLatestData() {
