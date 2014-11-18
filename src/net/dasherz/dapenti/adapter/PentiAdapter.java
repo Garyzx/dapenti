@@ -7,8 +7,8 @@ import java.util.Set;
 
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.database.DBConstants;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +17,16 @@ import android.widget.TextView;
 
 public class PentiAdapter extends BaseAdapter {
 
+	@SuppressLint("UseSparseArrays")
 	private final HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
 
 	private final Context ctx;
 	private final List<Map<String, String>> data;
-	private String footer;
 
-	public PentiAdapter(Context ctx, List<Map<String, String>> data, String footer) {
+	public PentiAdapter(Context ctx, List<Map<String, String>> data) {
 		super();
 		this.ctx = ctx;
 		this.data = data;
-		this.footer = footer;
 	}
 
 	public void setNewSelection(int position, boolean value) {
@@ -56,7 +55,7 @@ public class PentiAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return getData().size() + 1;
+		return getData().size();
 	}
 
 	@Override
@@ -68,10 +67,8 @@ public class PentiAdapter extends BaseAdapter {
 			} else {
 				return getData().get(position).get(DBConstants.ITEM_TITLE);
 			}
-		} else {
-			return getFooter();
-
 		}
+		return null;
 	}
 
 	@Override
@@ -86,16 +83,12 @@ public class PentiAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// LayoutInflater inflater = LayoutInflater.from(ctx);
 		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View entry = inflater.inflate(R.layout.tugua_entry, parent, false);
+
 		TextView textView = (TextView) entry.findViewById(R.id.tugua_entry);
-		// textView.setBackgroundResource(R.drawable.bkg);
 		if (position < getData().size()) {
 			textView.setText(getItem(position).toString());
-		} else {
-			textView.setText(getFooter());
-			textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 		}
 		if (mSelection.get(position) != null) {
 			entry.setBackgroundColor(ctx.getResources().getColor(R.color.holo_blue_color));
@@ -105,13 +98,5 @@ public class PentiAdapter extends BaseAdapter {
 
 	public List<Map<String, String>> getData() {
 		return data;
-	}
-
-	public String getFooter() {
-		return footer;
-	}
-
-	public void setFooter(String footer) {
-		this.footer = footer;
 	}
 }

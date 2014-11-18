@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -110,6 +111,7 @@ public class FavouriteFragment extends Fragment {
 				mode.setTitle(checkedItemCount + "个项目已选择");
 			}
 		});
+		handleForPullingUpLoading();
 		swipeLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
 		swipeLayout.setColorSchemeColors(Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW);
 		swipeLayout.setOnRefreshListener(new OnRefreshListener() {
@@ -163,6 +165,30 @@ public class FavouriteFragment extends Fragment {
 			getLatestData();
 		}
 		return root;
+	}
+
+	private void handleForPullingUpLoading(){
+		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+		boolean isLastRow = false;
+
+		@Override
+		public void onScroll(AbsListView view, int firstVisibleItem,
+				int visibleItemCount, int totalItemCount) {
+			if (firstVisibleItem + visibleItemCount == totalItemCount
+					&& totalItemCount > 0) {
+				isLastRow = true;
+			}
+		}
+
+		@Override
+		public void onScrollStateChanged(AbsListView view, int scrollState) {			
+			if (isLastRow
+					&& scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+				new LoadItemTask().execute();
+				isLastRow = false;
+			}
+		}
+	});
 	}
 
 	public void getLatestData() {
@@ -229,13 +255,12 @@ public class FavouriteFragment extends Fragment {
 				return;
 			}
 			if (data.size() == 0) {
-				adapter.setFooter(Constants.NO_MORE_NEW);
 				adapter.notifyDataSetChanged();
 				Toast.makeText(getActivity(), "没有更多数据了，刷新试试", Toast.LENGTH_SHORT).show();
 				return;
 			}
 			if (adapter == null) {
-				adapter = new PentiAdapter(getActivity(), data, Constants.LOAD_MORE);
+				adapter = new PentiAdapter(getActivity(), data);
 				mListView.setAdapter(adapter);
 			} else {
 				adapter.getData().addAll(data);
