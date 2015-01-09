@@ -3,14 +3,15 @@ package net.dasherz.dapenti.fragment;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.activity.PentiDetailActivity;
 import net.dasherz.dapenti.adapter.PentiAdapter;
 import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
-import net.dasherz.dapenti.database.PentiDatabaseHelper;
+import net.dasherz.dapenti.database.DBHelper;
+import net.dasherz.dapenti.database.Penti;
+import net.dasherz.dapenti.util.LogUtil;
 import net.dasherz.dapenti.util.NetUtil;
 import net.dasherz.dapenti.xml.PentiXmlParser;
 import android.content.ClipData;
@@ -22,7 +23,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,11 +43,12 @@ import android.widget.Toast;
  * 
  */
 public abstract class PentiBaseFragment extends Fragment {
-
+	private static final String TAG = PentiBaseFragment.class.getSimpleName();
 	private ListView listView;
 	private PentiAdapter adapter;
 	private SwipeRefreshLayout swipeLayout;
-	private PentiDatabaseHelper dbhelper;
+	// private PentiDatabaseHelper dbhelper;
+	private DBHelper dbHelper;
 	boolean isRefreshing = false;
 	int recordCount = 0;
 
@@ -57,24 +58,24 @@ public abstract class PentiBaseFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.list, container, false);
 		listView = (ListView) root.findViewById(R.id.pentiListView);
-		handleForMultiChoiceMode();
-		handleForPullingDownRefresh(root);
+		handleMultiChoiceMode();
+		handlePullingDownRefresh(root);
 		if (adapter == null) {
 			listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
 					new String[] { "正在加载..." }));
 		} else {
 			listView.setAdapter(adapter);
 		}
-		handleForItemClick();
-		handleForPullingUpLoading();
-		dbhelper = new PentiDatabaseHelper(getActivity(), DBConstants.DATABASE_NAME, null, DBConstants.version);
+		handleItemClick();
+		handlePullingUpLoading();
+		dbHelper = DBHelper.getInstance(getActivity());
 		if (adapter == null) {
 			new LoadItemTask().execute();
 		}
 		return root;
 	}
-	
-	private void handleForMultiChoiceMode(){
+
+	private void handleMultiChoiceMode() {
 		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
 			int checkedItemCount = 0;
@@ -136,8 +137,8 @@ public abstract class PentiBaseFragment extends Fragment {
 			}
 		});
 	}
-	
-	private void handleForPullingDownRefresh(View root){
+
+	private void handlePullingDownRefresh(View root) {
 		swipeLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
 		swipeLayout.setColorSchemeColors(Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW);
 		swipeLayout.setOnRefreshListener(new OnRefreshListener() {
@@ -148,8 +149,8 @@ public abstract class PentiBaseFragment extends Fragment {
 			}
 		});
 	}
-	
-	private void handleForItemClick(){
+
+	private void handleItemClick() {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -168,14 +169,14 @@ public abstract class PentiBaseFragment extends Fragment {
 					return;
 				}
 				// if user clicked on an real item
-				if (position < adapter.getCount() - 1 && adapter.getData().get(position) instanceof Map) {
-					Map<String, String> item = adapter.getData().get(position);
-					Log.d("TUGUA", "Opening new activity to show web page");
+				if (position < adapter.getCount() - 1) {
+					Penti item = adapter.getPentis().get(position);
+					LogUtil.d(TAG, "Opening new activity to show web page");
 					Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
-					intent.putExtra(DBConstants.ITEM_ID, item.get(DBConstants.ITEM_ID));
-					intent.putExtra(DBConstants.ITEM_TITLE, item.get(DBConstants.ITEM_TITLE));
-					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.get(DBConstants.ITEM_DESCRIPTION));
-					intent.putExtra(DBConstants.ITEM_LINK, item.get(DBConstants.ITEM_LINK));
+					intent.putExtra(DBConstants.ITEM_ID, item.getId());
+					intent.putExtra(DBConstants.ITEM_TITLE, item.getTitle());
+					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.getDescription());
+					intent.putExtra(DBConstants.ITEM_LINK, item.getLink());
 					startActivity(intent);
 				}
 
@@ -183,30 +184,27 @@ public abstract class PentiBaseFragment extends Fragment {
 		});
 	}
 
-	private void handleForPullingUpLoading(){
-	listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-		boolean isLastRow = false;
+	private void handlePullingUpLoading() {
+		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			boolean isLastRow = false;
 
-		@Override
-		public void onScroll(AbsListView view, int firstVisibleItem,
-				int visibleItemCount, int totalItemCount) {
-			if (firstVisibleItem + visibleItemCount == totalItemCount
-					&& totalItemCount > 0) {
-				isLastRow = true;
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount > 0) {
+					isLastRow = true;
+				}
 			}
-		}
 
-		@Override
-		public void onScrollStateChanged(AbsListView view, int scrollState) {			
-			if (isLastRow
-					&& scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-				new LoadItemTask().execute();
-				isLastRow = false;
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				if (isLastRow && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+					new LoadItemTask().execute();
+					isLastRow = false;
+				}
 			}
-		}
-	});
+		});
 	}
-	
+
 	public void getLatestData() {
 		if (!isRefreshing) {
 			isRefreshing = true;
@@ -231,17 +229,17 @@ public abstract class PentiBaseFragment extends Fragment {
 				url = Constants.URL_PICTURE;
 				break;
 			default:
-				Log.d("ERROR", "Can't find proper url for this type.");
+				LogUtil.d("ERROR", "Can't find proper url for this type.");
 				break;
 			}
-			Log.d("UPDATE", "Updating for content type: " + getContentType());
+			LogUtil.d(TAG, "Updating for content type: " + getContentType());
 			// if url is not found, just reload the list
 			if (url == null) {
 				return 1;
 			}
 			InputStream stream = null;
 			PentiXmlParser xmlParser = new PentiXmlParser();
-			List<net.dasherz.dapenti.xml.PentiItem> items = null;
+			List<Penti> items = null;
 
 			try {
 				stream = NetUtil.downloadUrl(url);
@@ -262,7 +260,7 @@ public abstract class PentiBaseFragment extends Fragment {
 			if (items == null) {
 				return -1;
 			}
-			int itmeCount = dbhelper.insertItemsIfNotExist(items, getContentType());
+			int itmeCount = dbHelper.insertItemsIfNotExist(items, getContentType());
 
 			return itmeCount;
 		}
@@ -285,25 +283,24 @@ public abstract class PentiBaseFragment extends Fragment {
 
 	}
 
-	public class LoadItemTask extends AsyncTask<Void, Void, List<Map<String, String>>> {
+	public class LoadItemTask extends AsyncTask<Void, Void, List<Penti>> {
 
 		/**
 		 * return type: 0 no record in database, need to load data from web
 		 */
 		@Override
-		protected List<Map<String, String>> doInBackground(Void... params) {
-			if (dbhelper.getCountForType(getContentType()) == 0) {
+		protected List<Penti> doInBackground(Void... params) {
+			if (dbHelper.getCountForType(getContentType()) == 0) {
 				return null;
 			}
-			List<Map<String, String>> data = dbhelper.readItems(getContentType(), recordCount, recordCount
-					+ DBConstants.ROW_COUNT_EVERY_READ);
+			List<Penti> data = dbHelper.readItems(getContentType(), DBConstants.ROW_COUNT_EVERY_READ, recordCount);
 			recordCount += data.size();
 
 			return data;
 		}
 
 		@Override
-		protected void onPostExecute(List<Map<String, String>> data) {
+		protected void onPostExecute(List<Penti> data) {
 			if (data == null) {
 				listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
 						new String[] { "正在加载..." }));
@@ -319,7 +316,7 @@ public abstract class PentiBaseFragment extends Fragment {
 				adapter = new PentiAdapter(getActivity(), data);
 				listView.setAdapter(adapter);
 			} else {
-				adapter.getData().addAll(data);
+				adapter.getPentis().addAll(data);
 				adapter.notifyDataSetChanged();
 			}
 
@@ -336,7 +333,7 @@ public abstract class PentiBaseFragment extends Fragment {
 		@Override
 		protected Void doInBackground(String... params) {
 
-			dbhelper.addToFav(params[0]);
+			dbHelper.addToFav(params[0]);
 			return null;
 
 		}

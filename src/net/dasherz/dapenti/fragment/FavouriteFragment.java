@@ -2,14 +2,15 @@ package net.dasherz.dapenti.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.activity.PentiDetailActivity;
 import net.dasherz.dapenti.adapter.PentiAdapter;
 import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
-import net.dasherz.dapenti.database.PentiDatabaseHelper;
+import net.dasherz.dapenti.database.DBHelper;
+import net.dasherz.dapenti.database.Penti;
+import net.dasherz.dapenti.util.LogUtil;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
@@ -27,10 +28,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -40,11 +41,11 @@ import android.widget.Toast;
  * 
  */
 public class FavouriteFragment extends Fragment {
-
+	private static final String TAG = FavouriteFragment.class.getSimpleName();
 	ListView mListView;
 	PentiAdapter adapter;
 	private SwipeRefreshLayout swipeLayout;
-	private PentiDatabaseHelper dbhelper;
+	private DBHelper dbHelper;
 	int recordCount = 0;
 	private boolean isRefreshing = false;
 
@@ -111,7 +112,7 @@ public class FavouriteFragment extends Fragment {
 				mode.setTitle(checkedItemCount + "个项目已选择");
 			}
 		});
-		handleForPullingUpLoading();
+		handlePullingUpLoading();
 		swipeLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
 		swipeLayout.setColorSchemeColors(Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW);
 		swipeLayout.setOnRefreshListener(new OnRefreshListener() {
@@ -142,53 +143,49 @@ public class FavouriteFragment extends Fragment {
 					return;
 				}
 				// if user click on twitte, then just return
-				if (adapter.getData().get(position).get(DBConstants.ITEM_CONTENT_TYPE)
-						.equals(String.valueOf(DBConstants.CONTENT_TYPE_TWITTE))) {
+				if (adapter.getPentis().get(position).getContentType().equals(DBConstants.CONTENT_TYPE_TWITTE)) {
 					return;
 				}
 				// if user clicked on an real item
-				if (position < adapter.getCount() - 1 && adapter.getData().get(position) instanceof Map) {
-					Map<String, String> item = adapter.getData().get(position);
-					Log.d("TUGUA", "Opening new activity to show web page");
+				if (position < adapter.getCount() - 1) {
+					Penti item = adapter.getPentis().get(position);
+					LogUtil.d(TAG, "Opening new activity to show web page");
 					Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
-					intent.putExtra(DBConstants.ITEM_ID, item.get(DBConstants.ITEM_ID));
-					intent.putExtra(DBConstants.ITEM_TITLE, item.get(DBConstants.ITEM_TITLE));
-					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.get(DBConstants.ITEM_DESCRIPTION));
-					intent.putExtra(DBConstants.ITEM_LINK, item.get(DBConstants.ITEM_LINK));
+					intent.putExtra(DBConstants.ITEM_ID, item.getId());
+					intent.putExtra(DBConstants.ITEM_TITLE, item.getTitle());
+					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.getDescription());
+					intent.putExtra(DBConstants.ITEM_LINK, item.getLink());
 					startActivity(intent);
 				}
 
 			}
 		});
-		dbhelper = new PentiDatabaseHelper(getActivity(), DBConstants.DATABASE_NAME, null, DBConstants.version);
+		dbHelper = DBHelper.getInstance(getActivity());
 		if (adapter == null) {
 			getLatestData();
 		}
 		return root;
 	}
 
-	private void handleForPullingUpLoading(){
+	private void handlePullingUpLoading() {
 		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-		boolean isLastRow = false;
+			boolean isLastRow = false;
 
-		@Override
-		public void onScroll(AbsListView view, int firstVisibleItem,
-				int visibleItemCount, int totalItemCount) {
-			if (firstVisibleItem + visibleItemCount == totalItemCount
-					&& totalItemCount > 0) {
-				isLastRow = true;
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount > 0) {
+					isLastRow = true;
+				}
 			}
-		}
 
-		@Override
-		public void onScrollStateChanged(AbsListView view, int scrollState) {			
-			if (isLastRow
-					&& scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-				new LoadItemTask().execute();
-				isLastRow = false;
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				if (isLastRow && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+					new LoadItemTask().execute();
+					isLastRow = false;
+				}
 			}
-		}
-	});
+		});
 	}
 
 	public void getLatestData() {
@@ -202,13 +199,13 @@ public class FavouriteFragment extends Fragment {
 
 	}
 
-	private class LoadItemTask extends AsyncTask<Void, Void, List<Map<String, String>>> {
+	private class LoadItemTask extends AsyncTask<Void, Void, List<Penti>> {
 
 		/**
 		 * return type: 0 no record in database, need to load data from web
 		 */
 		@Override
-		protected List<Map<String, String>> doInBackground(Void... params) {
+		protected List<Penti> doInBackground(Void... params) {
 			// FIXME When browsering fav items, goto other tab, add one new item
 			// to fav, then change back to fav. Click load more items, error
 			// will happen, because the item's location in the query changes.
@@ -216,12 +213,11 @@ public class FavouriteFragment extends Fragment {
 			// lost item been reviewing. Not refresh will cause same item been
 			// show twice.
 			// Manually refresh will solve this.
-			if (dbhelper.getCountForFav() == 0) {
+			if (dbHelper.getCountForFav() == 0) {
 				Log.d("DB", "No data for fav");
 				return null;
 			}
-			List<Map<String, String>> data = dbhelper.readItems(-1, recordCount, recordCount
-					+ DBConstants.ROW_COUNT_EVERY_READ);
+			List<Penti> data = dbHelper.readItems(-1, DBConstants.ROW_COUNT_EVERY_READ, recordCount);
 			recordCount += data.size();
 
 			if (adapter == null) {
@@ -230,13 +226,13 @@ public class FavouriteFragment extends Fragment {
 			}
 			// if the data is not in exist list, so add it to available set,
 			// remove exist ones
-			List<Map<String, String>> availableData = new ArrayList<>();
+			List<Penti> availableData = new ArrayList<>();
 			List<String> existIds = new ArrayList<>();
-			for (Map<String, String> existRow : adapter.getData()) {
-				existIds.add(existRow.get(DBConstants.ITEM_ID));
+			for (Penti existRow : adapter.getPentis()) {
+				existIds.add(existRow.getId().toString());
 			}
-			for (Map<String, String> row : data) {
-				if (!existIds.contains(row.get(DBConstants.ITEM_ID))) {
+			for (Penti row : data) {
+				if (!existIds.contains(row.getId())) {
 					availableData.add(row);
 				}
 
@@ -247,7 +243,7 @@ public class FavouriteFragment extends Fragment {
 		}
 
 		@Override
-		protected void onPostExecute(List<Map<String, String>> data) {
+		protected void onPostExecute(List<Penti> data) {
 			if (data == null) {
 				mListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
 						new String[] { "没有数据" }));
@@ -255,7 +251,7 @@ public class FavouriteFragment extends Fragment {
 				return;
 			}
 			if (data.size() == 0) {
-				adapter.notifyDataSetChanged();
+				// adapter.notifyDataSetChanged();
 				Toast.makeText(getActivity(), "没有更多数据了，刷新试试", Toast.LENGTH_SHORT).show();
 				return;
 			}
@@ -263,7 +259,7 @@ public class FavouriteFragment extends Fragment {
 				adapter = new PentiAdapter(getActivity(), data);
 				mListView.setAdapter(adapter);
 			} else {
-				adapter.getData().addAll(data);
+				adapter.getPentis().addAll(data);
 				adapter.notifyDataSetChanged();
 			}
 
@@ -274,7 +270,7 @@ public class FavouriteFragment extends Fragment {
 
 		@Override
 		protected Void doInBackground(String... ids) {
-			dbhelper.removeFromFav(ids[0]);
+			dbHelper.removeFromFav(ids[0]);
 			return null;
 		}
 

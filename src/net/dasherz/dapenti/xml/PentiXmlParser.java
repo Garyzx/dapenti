@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import net.dasherz.dapenti.database.DBConstants;
+import net.dasherz.dapenti.database.Penti;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -17,7 +20,7 @@ public class PentiXmlParser {
 
 	private static final String ns = null;
 
-	public List<PentiItem> parse(InputStream in) throws XmlPullParserException, IOException, ParseException {
+	public List<Penti> parse(InputStream in) throws XmlPullParserException, IOException, ParseException {
 		try {
 			XmlPullParser parser = Xml.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -29,14 +32,14 @@ public class PentiXmlParser {
 		}
 	}
 
-	private List<PentiItem> readRss(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
-		parser.require(XmlPullParser.START_TAG, ns, "rss");
+	private List<Penti> readRss(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.RSS);
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
 				continue;
 			}
 			String name = parser.getName();
-			if (name.equals("channel")) {
+			if (name.equals(DBConstants.CHANNEL)) {
 				return readChannel(parser);
 			} else {
 				skip(parser);
@@ -46,16 +49,15 @@ public class PentiXmlParser {
 		return null;
 	}
 
-	private List<PentiItem> readChannel(XmlPullParser parser) throws XmlPullParserException, IOException,
-			ParseException {
-		List<PentiItem> items = new ArrayList<>();
-		parser.require(XmlPullParser.START_TAG, ns, "channel");
+	private List<Penti> readChannel(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+		List<Penti> items = new ArrayList<>();
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.CHANNEL);
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
 				continue;
 			}
 			String name = parser.getName();
-			if (name.equals("item")) {
+			if (name.equals(DBConstants.ITEM)) {
 				items.add(readItem(parser));
 			} else {
 				skip(parser);
@@ -65,23 +67,23 @@ public class PentiXmlParser {
 		return items;
 	}
 
-	private PentiItem readItem(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
-		parser.require(XmlPullParser.START_TAG, ns, "item");
-		PentiItem item = new PentiItem();
+	private Penti readItem(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.ITEM);
+		Penti item = new Penti();
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
 				continue;
 			}
 			String name = parser.getName();
-			if (name.equals("title")) {
+			if (name.equals(DBConstants.ITEM_TITLE)) {
 				item.setTitle(readTitle(parser));
-			} else if (name.equals("link")) {
+			} else if (name.equals(DBConstants.ITEM_LINK)) {
 				item.setLink(readLink(parser));
-			} else if (name.equals("author")) {
+			} else if (name.equals(DBConstants.ITEM_AUTHOR)) {
 				item.setAuthor(readAuthor(parser));
-			} else if (name.equals("pubDate")) {
+			} else if (name.equals(DBConstants.ITEM_PUB_DATE)) {
 				item.setPubDate(readPubDate(parser));
-			} else if (name.equals("description")) {
+			} else if (name.equals(DBConstants.ITEM_DESCRIPTION)) {
 				item.setDescription(readDescription(parser));
 			} else {
 				skip(parser);
@@ -92,39 +94,39 @@ public class PentiXmlParser {
 
 	private long readPubDate(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss Z", Locale.US);
-		parser.require(XmlPullParser.START_TAG, ns, "pubDate");
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.ITEM_PUB_DATE);
 		String text = readText(parser);
 		// delete day in a week, because it's not standard. "Wes"
 		text = text.substring(5);
-		parser.require(XmlPullParser.END_TAG, ns, "pubDate");
+		parser.require(XmlPullParser.END_TAG, ns, DBConstants.ITEM_PUB_DATE);
 		return sdf.parse(text).getTime();
 	}
 
 	private String readDescription(XmlPullParser parser) throws XmlPullParserException, IOException {
-		parser.require(XmlPullParser.START_TAG, ns, "description");
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.ITEM_DESCRIPTION);
 		String text = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "description");
+		parser.require(XmlPullParser.END_TAG, ns, DBConstants.ITEM_DESCRIPTION);
 		return text;
 	}
 
 	private String readAuthor(XmlPullParser parser) throws XmlPullParserException, IOException {
-		parser.require(XmlPullParser.START_TAG, ns, "author");
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.ITEM_AUTHOR);
 		String text = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "author");
+		parser.require(XmlPullParser.END_TAG, ns, DBConstants.ITEM_AUTHOR);
 		return text;
 	}
 
 	private String readLink(XmlPullParser parser) throws XmlPullParserException, IOException {
-		parser.require(XmlPullParser.START_TAG, ns, "link");
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.ITEM_LINK);
 		String link = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "link");
+		parser.require(XmlPullParser.END_TAG, ns, DBConstants.ITEM_LINK);
 		return link;
 	}
 
 	private String readTitle(XmlPullParser parser) throws XmlPullParserException, IOException {
-		parser.require(XmlPullParser.START_TAG, ns, "title");
+		parser.require(XmlPullParser.START_TAG, ns, DBConstants.ITEM_TITLE);
 		String title = readText(parser);
-		parser.require(XmlPullParser.END_TAG, ns, "title");
+		parser.require(XmlPullParser.END_TAG, ns, DBConstants.ITEM_TITLE);
 		return title;
 	}
 

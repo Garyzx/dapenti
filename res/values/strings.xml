@@ -14,5 +14,6 @@
     <string name="copy_title" translatable="false">复制标题</string>
     <string name="copy_text" translatable="false">复制文字</string>
     <string name="open_in_browser" translatable="false">浏览器中打开</string>
+    <string name="share" translatable="false">分享</string>
 
 </resources>

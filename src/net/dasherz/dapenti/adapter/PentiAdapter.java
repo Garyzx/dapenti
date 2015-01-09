@@ -2,13 +2,14 @@ package net.dasherz.dapenti.adapter;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.database.DBConstants;
+import net.dasherz.dapenti.database.Penti;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +22,15 @@ public class PentiAdapter extends BaseAdapter {
 	private final HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
 
 	private final Context ctx;
-	private final List<Map<String, String>> data;
+	private final List<Penti> pentis;
+	private final LayoutInflater mInflater;
 
-	public PentiAdapter(Context ctx, List<Map<String, String>> data) {
+	public PentiAdapter(Context ctx, List<Penti> pentis) {
 		super();
 		this.ctx = ctx;
-		this.data = data;
+		this.pentis = pentis;
+		mInflater = LayoutInflater.from(ctx);
+
 	}
 
 	public void setNewSelection(int position, boolean value) {
@@ -49,23 +53,22 @@ public class PentiAdapter extends BaseAdapter {
 	}
 
 	public void clearSelection() {
-		mSelection.clear();// = new HashMap<Integer, Boolean>();
+		mSelection.clear();
 		notifyDataSetChanged();
 	}
 
 	@Override
 	public int getCount() {
-		return getData().size();
+		return getPentis().size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		if (position < getData().size()) {
-			if (getData().get(position).get(DBConstants.ITEM_CONTENT_TYPE)
-					.equals(String.valueOf(DBConstants.CONTENT_TYPE_TWITTE))) {
-				return getData().get(position).get(DBConstants.ITEM_DESCRIPTION);
+		if (position < pentis.size()) {
+			if (pentis.get(position).getContentType().equals(DBConstants.CONTENT_TYPE_TWITTE)) {
+				return pentis.get(position).getDescription();
 			} else {
-				return getData().get(position).get(DBConstants.ITEM_TITLE);
+				return pentis.get(position).getTitle();
 			}
 		}
 		return null;
@@ -73,8 +76,8 @@ public class PentiAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		if (position < getData().size()) {
-			return Integer.parseInt(getData().get(position).get(DBConstants.ITEM_ID));
+		if (position < pentis.size()) {
+			return pentis.get(position).getId();
 		} else {
 			return -1;
 
@@ -83,20 +86,32 @@ public class PentiAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View entry = inflater.inflate(R.layout.tugua_entry, parent, false);
+		ViewHolder holder;
+		if (convertView == null) {
+			convertView = mInflater.inflate(R.layout.tugua_entry, parent, false);
+			holder = new ViewHolder();
+			holder.text = (TextView) convertView.findViewById(R.id.tugua_entry);
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
+		}
 
-		TextView textView = (TextView) entry.findViewById(R.id.tugua_entry);
-		if (position < getData().size()) {
-			textView.setText(getItem(position).toString());
+		if (position < pentis.size()) {
+			holder.text.setText(getItem(position).toString());
 		}
 		if (mSelection.get(position) != null) {
-			entry.setBackgroundColor(ctx.getResources().getColor(R.color.holo_blue_color));
+			convertView.setBackgroundColor(ctx.getResources().getColor(R.color.holo_blue_color));
+		} else {
+			convertView.setBackgroundColor(Color.TRANSPARENT);
 		}
-		return entry;
+		return convertView;
 	}
 
-	public List<Map<String, String>> getData() {
-		return data;
+	public List<Penti> getPentis() {
+		return pentis;
+	}
+
+	static class ViewHolder {
+		TextView text;
 	}
 }

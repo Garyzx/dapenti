@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
  * 
  */
 public class PictureFragment extends PentiBaseFragment {
+	private static final String TAG = PictureFragment.class.getSimpleName();
 
 	// @Override
 	// public View onCreateView(LayoutInflater inflater, ViewGroup container,

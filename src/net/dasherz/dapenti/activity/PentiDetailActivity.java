@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.database.DBConstants;
-import net.dasherz.dapenti.database.PentiDatabaseHelper;
+import net.dasherz.dapenti.database.DBHelper;
 import net.dasherz.dapenti.util.NetUtil;
 import android.app.Activity;
 import android.content.ClipData;
@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,22 +27,25 @@ public class PentiDetailActivity extends Activity {
 
 	TextView titleView;
 	WebView tuguaWebView;
-	String id, title, url, link;
+	String title, url, link;
+	long id;
 	ProgressBar progressBar;
-	private PentiDatabaseHelper dbhelper;
+	private DBHelper dbhelper;
+	private ShareActionProvider mShareActionProvider;
+	private Intent mShareIntent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_penti_detail);
-		dbhelper = new PentiDatabaseHelper(this, DBConstants.DATABASE_NAME, null, DBConstants.version);
+		dbhelper = DBHelper.getInstance(getApplication());
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		titleView = (TextView) findViewById(R.id.tuguaTitle);
 		tuguaWebView = (WebView) findViewById(R.id.tuguaDetailPage);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 
 		Intent intent = getIntent();
-		id = intent.getStringExtra(DBConstants.ITEM_ID);
+		id = intent.getLongExtra(DBConstants.ITEM_ID, -1);
 		title = intent.getStringExtra(DBConstants.ITEM_TITLE);
 		url = intent.getStringExtra(DBConstants.ITEM_DESCRIPTION);
 		link = intent.getStringExtra(DBConstants.ITEM_LINK);
@@ -82,6 +86,15 @@ public class PentiDetailActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.tugua_detail, menu);
+		MenuItem item = menu.findItem(R.id.share);
+		mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+		mShareIntent = new Intent();
+		mShareIntent.setAction(Intent.ACTION_SEND);
+		mShareIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+		mShareIntent.putExtra(Intent.EXTRA_TITLE, title);
+		mShareIntent.putExtra(Intent.EXTRA_TEXT, url);
+		mShareIntent.setType("text/plain");
+		setShareIntent(mShareIntent);
 		return true;
 	}
 
@@ -91,27 +104,33 @@ public class PentiDetailActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int menuId = item.getItemId();
-		if (menuId == android.R.id.home) {
+		switch (menuId) {
+		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		if (menuId == R.id.add_favourite) {
-			new AddToFavTask().execute(id);
-			return true;
-		}
-		if (menuId == R.id.copy_title) {
+			break;
+		case R.id.add_favourite:
+			new AddToFavTask().execute(String.valueOf(id));
+			break;
+		case R.id.copy_title:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			ClipData clip = ClipData.newPlainText("title", title);
 			clipboard.setPrimaryClip(clip);
 			Toast.makeText(this, "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
-			return true;
-		}
-		if (menuId == R.id.open_in_browser) {
+			break;
+		case R.id.open_in_browser:
 			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
 			startActivity(browserIntent);
-			return true;
+			break;
+		default:
+			break;
 		}
-		return super.onOptionsItemSelected(item);
+		return true;
+	}
+
+	private void setShareIntent(Intent shareIntent) {
+		if (mShareActionProvider != null) {
+			mShareActionProvider.setShareIntent(shareIntent);
+		}
 	}
 
 	public class AddToFavTask extends AsyncTask<String, Void, Void> {

@@ -12,6 +12,8 @@
         android:id="@+id/copy_title"
         android:orderInCategory="200"
         android:title="@string/copy_text"
+        android:icon="@drawable/ic_menu_copy_holo_dark"
         app:showAsAction="ifRoom"/>
+ 
     
 </menu>

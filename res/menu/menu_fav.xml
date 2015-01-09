@@ -10,8 +10,9 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/copy_text"
+        android:icon="@drawable/ic_menu_copy_holo_dark"
         android:orderInCategory="200"
         android:title="@string/copy_title"
         app:showAsAction="ifRoom"/>
-    
+
 </menu>
