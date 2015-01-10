@@ -59,7 +59,8 @@ public class DBHelper {
 	}
 
 	public List<Penti> readItems(int contentType, int limit, int offset) {
-		QueryBuilder<Penti> queryBuilder = pentiDao.queryBuilder().limit(limit).offset(offset);
+		QueryBuilder<Penti> queryBuilder = pentiDao.queryBuilder().limit(limit).offset(offset)
+				.orderDesc(Properties.PubDate);
 		// FIXME magin number
 
 		if (contentType != -1) {
