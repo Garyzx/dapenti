@@ -61,16 +61,24 @@ public class NetUtil {
 	}
 
 	private static String optimizeHTMLCode(String line) {
-		if (line.contains("<IMG") && !line.contains("gif")) {
+		if (isNormalGif(line)) {
 			line = line.replace("<IMG", "<IMG width=\"100%\"");
-		}
-		if (line.contains("<img") && !line.contains("gif")) {
-			line = line.replace("<img", "<img width=\"100%\"");
 		}
 		line = line.replace("<p>&nbsp;</p>", "").replace("<p><strong><font size=\"3\"></font></strong>&nbsp;</p>", "");
 		line = line.replaceAll("<IFRAME[^>]+?></IFRAME>", "");
 		line = line.replaceAll("(<A[^>]+?>)(http.+?)(</A>)", "$1¡¥Ω”µÿ÷∑$3");
 		return line;
+	}
+
+	private static boolean isNormalGif(String line) {
+		if (line.contains("<IMG") || line.contains("<img")) {
+			if (line.contains("type=\"face\"")) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean getNetworkMode(Context ctx) {
