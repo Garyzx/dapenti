@@ -15,5 +15,7 @@
     <string name="copy_text" translatable="false">复制文字</string>
     <string name="open_in_browser" translatable="false">浏览器中打开</string>
     <string name="share" translatable="false">分享</string>
+    <string name="original_content">浏览原始内容</string>
+    <string name="optimized_content">浏览优化后内容</string>
 
 </resources>

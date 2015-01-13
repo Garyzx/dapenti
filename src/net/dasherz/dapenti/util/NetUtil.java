@@ -30,33 +30,19 @@ public class NetUtil {
 		return stream;
 	}
 
-	public static String getContentOfURL(String url) throws IOException {
-		return getStringFromInputStream(downloadUrl(url));
-	}
-
 	// convert InputStream to String
 	// for web show only
-	private static String getStringFromInputStream(InputStream is) {
-
+	public static String getContentOfURL(String url, boolean optimizeHTML) throws IOException {
+		InputStream is = downloadUrl(url);
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
-		// List<String> contents = new ArrayList<String>();
-		String line;
+		String line = null;
 		try {
-
 			br = new BufferedReader(new InputStreamReader(is));
 			while ((line = br.readLine()) != null) {
-				// to improve the load speed, maybe
-				// FIXME
-				if (line.contains("<IMG") && !line.contains("gif")) {
-					line = line.replace("<IMG", "<IMG width=\"100%\"");
+				if (optimizeHTML) {
+					line = optimizeHTMLCode(line);
 				}
-				if (line.contains("<img") && !line.contains("gif")) {
-					line = line.replace("<img", "<img width=\"100%\"");
-				}
-				line = line.replace("<p>&nbsp;</p>", "").replace(
-						"<p><strong><font size=\"3\"></font></strong>&nbsp;</p>", "");
-				// contents.add(line);
 				sb.append(line);
 			}
 
@@ -71,9 +57,20 @@ public class NetUtil {
 				}
 			}
 		}
-
 		return sb.toString();
+	}
 
+	private static String optimizeHTMLCode(String line) {
+		if (line.contains("<IMG") && !line.contains("gif")) {
+			line = line.replace("<IMG", "<IMG width=\"100%\"");
+		}
+		if (line.contains("<img") && !line.contains("gif")) {
+			line = line.replace("<img", "<img width=\"100%\"");
+		}
+		line = line.replace("<p>&nbsp;</p>", "").replace("<p><strong><font size=\"3\"></font></strong>&nbsp;</p>", "");
+		line = line.replaceAll("<IFRAME[^>]+?></IFRAME>", "");
+		line = line.replaceAll("(<A[^>]+?>)(http.+?)(</A>)", "$1¡¥Ω”µÿ÷∑$3");
+		return line;
 	}
 
 	public static boolean getNetworkMode(Context ctx) {

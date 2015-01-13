@@ -1139,6 +1139,7 @@ containing a value of this type.
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
         public static final int open_in_browser=0x7f06004b;
+        public static final int open_original_content=0x7f06004c;
         public static final int pentiListView=0x7f060043;
         public static final int progressBar1=0x7f060041;
         public static final int progress_circular=0x7f060018;
@@ -1156,7 +1157,7 @@ containing a value of this type.
         public static final int search_plate=0x7f060036;
         public static final int search_src_text=0x7f060037;
         public static final int search_voice_btn=0x7f06003b;
-        public static final int share=0x7f06004c;
+        public static final int share=0x7f06004d;
         public static final int shortcut=0x7f06002e;
         public static final int showCustom=0x7f060007;
         public static final int showHome=0x7f060004;
@@ -1285,6 +1286,8 @@ containing a value of this type.
         public static final int copy_title=0x7f0b0017;
         public static final int favourite=0x7f0b0012;
         public static final int open_in_browser=0x7f0b0019;
+        public static final int optimized_content=0x7f0b001c;
+        public static final int original_content=0x7f0b001b;
         public static final int picture=0x7f0b0011;
         public static final int refresh=0x7f0b0013;
         public static final int remove_favourite=0x7f0b0016;

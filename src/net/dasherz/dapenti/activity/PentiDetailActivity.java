@@ -34,6 +34,8 @@ public class PentiDetailActivity extends Activity {
 	private ShareActionProvider mShareActionProvider;
 	private Intent mShareIntent;
 
+	private boolean optimizeHTML = true;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,7 +63,7 @@ public class PentiDetailActivity extends Activity {
 		protected String doInBackground(String... params) {
 			String lines = null;
 			try {
-				lines = NetUtil.getContentOfURL(params[0]);
+				lines = NetUtil.getContentOfURL(params[0], optimizeHTML);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -120,6 +122,17 @@ public class PentiDetailActivity extends Activity {
 		case R.id.open_in_browser:
 			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
 			startActivity(browserIntent);
+			break;
+		case R.id.open_original_content:
+			if (optimizeHTML) {
+				optimizeHTML = false;
+				item.setTitle(R.string.optimized_content);
+			} else {
+				optimizeHTML = true;
+				item.setTitle(R.string.original_content);
+			}
+			progressBar.setVisibility(View.VISIBLE);
+			new LoadPageTask().execute(url);
 			break;
 		default:
 			break;
