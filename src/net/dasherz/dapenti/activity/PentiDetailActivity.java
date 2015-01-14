@@ -88,7 +88,7 @@ public class PentiDetailActivity extends Activity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_MENU) {
+		if (keyCode == KeyEvent.KEYCODE_MENU && mOptionsMenu != null) {
 			// http://stackoverflow.com/questions/3720804/android-open-menu-from-a-button
 			mOptionsMenu.performIdentifierAction(R.id.more_menu, 0);
 			return true;
