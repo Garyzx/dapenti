@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 public class NetUtil {
 	// Given a string representation of a URL, sets up a connection and gets
@@ -86,10 +85,10 @@ public class NetUtil {
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 		if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-			Log.d("NET", "in WIFI");
+			LogUtil.d("NET", "in WIFI");
 			return true;
 		}
-		Log.d("NET", "no WIFI");
+		LogUtil.d("NET", "no WIFI");
 		return false;
 	}
 

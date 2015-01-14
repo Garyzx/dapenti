@@ -135,7 +135,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 
 		this.doubleBackToExitPressedOnce = true;
-		Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, getResources().getString(R.string.press_again), Toast.LENGTH_SHORT).show();
 
 		new Handler().postDelayed(new Runnable() {
 

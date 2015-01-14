@@ -6,7 +6,6 @@ import java.util.List;
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.activity.PentiDetailActivity;
 import net.dasherz.dapenti.adapter.PentiAdapter;
-import net.dasherz.dapenti.constant.Constants;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.DBHelper;
 import net.dasherz.dapenti.database.Penti;
@@ -20,7 +19,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -86,7 +84,8 @@ public class FavouriteFragment extends Fragment {
 							android.content.Context.CLIPBOARD_SERVICE);
 					ClipData clip = ClipData.newPlainText("titles", buffer.toString());
 					clipboard.setPrimaryClip(clip);
-					Toast.makeText(getActivity(), "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), getResources().getString(R.string.already_copied_to_clip),
+							Toast.LENGTH_SHORT).show();
 				} else if (item.getItemId() == R.id.remove_favourite) {
 					StringBuffer buffer = new StringBuffer();
 
@@ -109,7 +108,7 @@ public class FavouriteFragment extends Fragment {
 					checkedItemCount--;
 					adapter.removeSelection(position);
 				}
-				mode.setTitle(checkedItemCount + "个项目已选择");
+				mode.setTitle(checkedItemCount + getResources().getString(R.string.item_chosen));
 			}
 		});
 		handlePullingUpLoading();
@@ -124,7 +123,7 @@ public class FavouriteFragment extends Fragment {
 		});
 		if (adapter == null) {
 			mListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-					new String[] { "正在加载..." }));
+					new String[] { getResources().getString(R.string.loading) }));
 		} else {
 			mListView.setAdapter(adapter);
 		}
@@ -133,13 +132,7 @@ public class FavouriteFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// if adapter is not initialized
-				if (adapter == null || adapter.getItem(position) == null
-						|| adapter.getItem(position).toString().equals(Constants.NO_MORE_NEW)) {
-					return;
-				}
-				// if user click on load more item
-				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
-					new LoadItemTask().execute();
+				if (adapter == null || adapter.getItem(position) == null) {
 					return;
 				}
 				// if user click on twitte, then just return
@@ -214,7 +207,7 @@ public class FavouriteFragment extends Fragment {
 			// show twice.
 			// Manually refresh will solve this.
 			if (dbHelper.getCountForFav() == 0) {
-				Log.d("DB", "No data for fav");
+				LogUtil.d(TAG, "No data for fav");
 				return null;
 			}
 			List<Penti> data = dbHelper.readItems(-1, DBConstants.ROW_COUNT_EVERY_READ, recordCount);
@@ -246,13 +239,14 @@ public class FavouriteFragment extends Fragment {
 		protected void onPostExecute(List<Penti> data) {
 			if (data == null) {
 				mListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-						new String[] { "没有数据" }));
+						new String[] { getResources().getString(R.string.no_data) }));
 				isRefreshing = false;
 				return;
 			}
 			if (data.size() == 0) {
 				// adapter.notifyDataSetChanged();
-				Toast.makeText(getActivity(), "没有更多数据了，刷新试试", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), getResources().getString(R.string.no_more_data_try_refresh),
+						Toast.LENGTH_SHORT).show();
 				return;
 			}
 			if (adapter == null) {
@@ -276,7 +270,8 @@ public class FavouriteFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			Toast.makeText(getActivity(), "已经从收藏中移除。", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), getResources().getString(R.string.already_removed_from_fav),
+					Toast.LENGTH_SHORT).show();
 			getLatestData();
 		}
 	}

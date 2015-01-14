@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
  * 
  */
 public class TuguaFragment extends PentiBaseFragment {
-	private static final String TAG = TuguaFragment.class.getSimpleName();
 
 	@Override
 	int getContentType() {

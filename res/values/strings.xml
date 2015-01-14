@@ -17,5 +17,18 @@
     <string name="share" translatable="false">分享</string>
     <string name="original_content">浏览原始内容</string>
     <string name="optimized_content">浏览优化后内容</string>
+    <string name="more">更多</string>
+    <string name="press_again">再按一次退出</string>
+    <string name="get_data_failed">获取数据失败</string>
+    <string name="already_copied_to_clip">已经复制标题到剪贴板</string>
+    <string name="already_added_to_fav">已经添加到收藏</string>
+    <string name="already_removed_from_fav">已经从收藏中移除</string>
+    <string name="item_chosen">个项目已选择</string>
+    <string name="loading">正在加载...</string>
+    <string name="no_data">没有数据</string>
+    <string name="no_more_data_try_refresh">没有更多数据了，刷新试试</string>
+    <string name="no_more_data">没有更多数据了</string>
+    <string name="already_updated">已经是最新了</string>
+    <string name="update_failed">更新出错了</string>
 
 </resources>

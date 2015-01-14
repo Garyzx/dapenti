@@ -5,6 +5,7 @@ import java.io.IOException;
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.DBHelper;
+import net.dasherz.dapenti.util.LogUtil;
 import net.dasherz.dapenti.util.NetUtil;
 import android.app.Activity;
 import android.content.ClipData;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PentiDetailActivity extends Activity {
-
+	private static final String TAG = PentiDetailActivity.class.getSimpleName();
 	TextView titleView;
 	WebView tuguaWebView;
 	String title, url, link;
@@ -33,7 +35,7 @@ public class PentiDetailActivity extends Activity {
 	private DBHelper dbhelper;
 	private ShareActionProvider mShareActionProvider;
 	private Intent mShareIntent;
-
+	private Menu mOptionsMenu;
 	private boolean optimizeHTML = true;
 
 	@Override
@@ -68,7 +70,7 @@ public class PentiDetailActivity extends Activity {
 				e.printStackTrace();
 			}
 			if (lines == null) {
-				lines = "获取数据失败。";
+				lines = getResources().getString(R.string.get_data_failed);
 			}
 			String content = "<html xmlns=\"http://www.w3.org/1999/xhtml\" ><head><meta http-equiv='content-type' content='text/html; charset=utf-8' /></head><body>"
 					+ lines + "</body>";
@@ -85,10 +87,21 @@ public class PentiDetailActivity extends Activity {
 	}
 
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			// http://stackoverflow.com/questions/3720804/android-open-menu-from-a-button
+			mOptionsMenu.performIdentifierAction(R.id.more_menu, 0);
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.tugua_detail, menu);
 		MenuItem item = menu.findItem(R.id.share);
+		mOptionsMenu = menu;
 		mShareActionProvider = (ShareActionProvider) item.getActionProvider();
 		mShareIntent = new Intent();
 		mShareIntent.setAction(Intent.ACTION_SEND);
@@ -97,6 +110,7 @@ public class PentiDetailActivity extends Activity {
 		mShareIntent.putExtra(Intent.EXTRA_TEXT, url);
 		mShareIntent.setType("text/plain");
 		setShareIntent(mShareIntent);
+		LogUtil.d(TAG, "onCreateOptionsMenu");
 		return true;
 	}
 
@@ -117,7 +131,7 @@ public class PentiDetailActivity extends Activity {
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			ClipData clip = ClipData.newPlainText("title", title);
 			clipboard.setPrimaryClip(clip);
-			Toast.makeText(this, "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.already_copied_to_clip), Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.open_in_browser:
 			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
@@ -150,7 +164,8 @@ public class PentiDetailActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			Toast.makeText(PentiDetailActivity.this, "已经添加到收藏", Toast.LENGTH_SHORT).show();
+			Toast.makeText(PentiDetailActivity.this, getResources().getString(R.string.already_added_to_fav),
+					Toast.LENGTH_SHORT).show();
 		}
 
 		@Override

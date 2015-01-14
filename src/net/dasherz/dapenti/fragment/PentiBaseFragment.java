@@ -61,8 +61,7 @@ public abstract class PentiBaseFragment extends Fragment {
 		handleMultiChoiceMode();
 		handlePullingDownRefresh(root);
 		if (adapter == null) {
-			listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-					new String[] { "正在加载..." }));
+			setLoadingForList();
 		} else {
 			listView.setAdapter(adapter);
 		}
@@ -73,6 +72,11 @@ public abstract class PentiBaseFragment extends Fragment {
 			new LoadItemTask().execute();
 		}
 		return root;
+	}
+
+	private void setLoadingForList() {
+		listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
+				new String[] { getResources().getString(R.string.loading) }));
 	}
 
 	private void handleMultiChoiceMode() {
@@ -109,7 +113,8 @@ public abstract class PentiBaseFragment extends Fragment {
 							android.content.Context.CLIPBOARD_SERVICE);
 					ClipData clip = ClipData.newPlainText("titles", buffer.toString());
 					clipboard.setPrimaryClip(clip);
-					Toast.makeText(getActivity(), "已经复制标题到剪贴板。", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), getResources().getString(R.string.already_copied_to_clip),
+							Toast.LENGTH_SHORT).show();
 				} else if (item.getItemId() == R.id.add_favourite) {
 					StringBuffer buffer = new StringBuffer();
 
@@ -133,7 +138,7 @@ public abstract class PentiBaseFragment extends Fragment {
 					checkedItemCount--;
 					adapter.removeSelection(position);
 				}
-				mode.setTitle(checkedItemCount + "个项目已选择");
+				mode.setTitle(checkedItemCount + getResources().getString(R.string.item_chosen));
 			}
 		});
 	}
@@ -157,11 +162,6 @@ public abstract class PentiBaseFragment extends Fragment {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// if adapter is not initialized
 				if (adapter == null || adapter.getItem(position) == null) {
-					return;
-				}
-				// if user click on load more item
-				if (adapter.getItem(position).toString().equals(Constants.LOAD_MORE)) {
-					new LoadItemTask().execute();
 					return;
 				}
 				// if user click on twitte, then just return
@@ -273,9 +273,11 @@ public abstract class PentiBaseFragment extends Fragment {
 				adapter = null;
 				new LoadItemTask().execute();
 			} else if (result.intValue() == -1) {
-				Toast.makeText(getActivity(), "更新出错了", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), getResources().getString(R.string.update_failed), Toast.LENGTH_SHORT)
+						.show();
 			} else {
-				Toast.makeText(getActivity(), "已经是最新了", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), getResources().getString(R.string.already_updated), Toast.LENGTH_SHORT)
+						.show();
 			}
 			swipeLayout.setRefreshing(false);
 			isRefreshing = false;
@@ -302,14 +304,14 @@ public abstract class PentiBaseFragment extends Fragment {
 		@Override
 		protected void onPostExecute(List<Penti> data) {
 			if (data == null) {
-				listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-						new String[] { "正在加载..." }));
+				setLoadingForList();
 				new GetNewItemTask().execute(getContentType());
 				return;
 			}
 			if (data.size() == 0) {
 				adapter.notifyDataSetChanged();
-				Toast.makeText(getActivity(), "没有更多数据了", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), getResources().getString(R.string.no_more_data), Toast.LENGTH_SHORT)
+						.show();
 				return;
 			}
 			if (adapter == null) {
@@ -327,7 +329,8 @@ public abstract class PentiBaseFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			Toast.makeText(getActivity(), "已经添加到收藏", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), getResources().getString(R.string.already_added_to_fav), Toast.LENGTH_SHORT)
+					.show();
 		}
 
 		@Override

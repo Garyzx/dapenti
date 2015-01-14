@@ -8,15 +8,6 @@ import android.support.v4.app.Fragment;
  * 
  */
 public class PictureFragment extends PentiBaseFragment {
-	private static final String TAG = PictureFragment.class.getSimpleName();
-
-	// @Override
-	// public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	// Bundle savedInstanceState) {
-	// View root = inflater.inflate(R.layout.list, container, false);
-	// root.setBackgroundColor(Color.YELLOW);
-	// return root;
-	// }
 
 	@Override
 	int getContentType() {

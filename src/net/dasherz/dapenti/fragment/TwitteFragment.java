@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
  * 
  */
 public class TwitteFragment extends PentiBaseFragment {
-	private static final String TAG = TwitteFragment.class.getSimpleName();
 
 	@Override
 	int getContentType() {

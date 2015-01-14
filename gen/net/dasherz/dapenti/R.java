@@ -1093,8 +1093,9 @@ containing a value of this type.
         public static final int ic_menu_copy_holo_dark=0x7f020058;
         public static final int ic_menu_refresh=0x7f020059;
         public static final int ic_menu_share_holo_dark=0x7f02005a;
-        public static final int ic_settings=0x7f02005b;
-        public static final int row_selector=0x7f02005c;
+        public static final int ic_more_vert_white=0x7f02005b;
+        public static final int ic_settings=0x7f02005c;
+        public static final int row_selector=0x7f02005d;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f06003c;
@@ -1135,11 +1136,12 @@ containing a value of this type.
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f060029;
         public static final int middle=0x7f060012;
+        public static final int more_menu=0x7f06004c;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
-        public static final int open_in_browser=0x7f06004b;
-        public static final int open_original_content=0x7f06004c;
+        public static final int open_in_browser=0x7f06004d;
+        public static final int open_original_content=0x7f06004e;
         public static final int pentiListView=0x7f060043;
         public static final int progressBar1=0x7f060041;
         public static final int progress_circular=0x7f060018;
@@ -1157,7 +1159,7 @@ containing a value of this type.
         public static final int search_plate=0x7f060036;
         public static final int search_src_text=0x7f060037;
         public static final int search_voice_btn=0x7f06003b;
-        public static final int share=0x7f06004d;
+        public static final int share=0x7f06004b;
         public static final int shortcut=0x7f06002e;
         public static final int showCustom=0x7f060007;
         public static final int showHome=0x7f060004;
@@ -1281,20 +1283,33 @@ containing a value of this type.
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
         public static final int action_settings=0x7f0b000e;
         public static final int add_favourite=0x7f0b0015;
+        public static final int already_added_to_fav=0x7f0b0021;
+        public static final int already_copied_to_clip=0x7f0b0020;
+        public static final int already_removed_from_fav=0x7f0b0022;
+        public static final int already_updated=0x7f0b0028;
         public static final int app_name=0x7f0b000d;
         public static final int copy_text=0x7f0b0018;
         public static final int copy_title=0x7f0b0017;
         public static final int favourite=0x7f0b0012;
+        public static final int get_data_failed=0x7f0b001f;
+        public static final int item_chosen=0x7f0b0023;
+        public static final int loading=0x7f0b0024;
+        public static final int more=0x7f0b001d;
+        public static final int no_data=0x7f0b0025;
+        public static final int no_more_data=0x7f0b0027;
+        public static final int no_more_data_try_refresh=0x7f0b0026;
         public static final int open_in_browser=0x7f0b0019;
         public static final int optimized_content=0x7f0b001c;
         public static final int original_content=0x7f0b001b;
         public static final int picture=0x7f0b0011;
+        public static final int press_again=0x7f0b001e;
         public static final int refresh=0x7f0b0013;
         public static final int remove_favourite=0x7f0b0016;
         public static final int share=0x7f0b001a;
         public static final int title_activity_tugua_detail=0x7f0b0014;
         public static final int tugua=0x7f0b000f;
         public static final int twitte=0x7f0b0010;
+        public static final int update_failed=0x7f0b0029;
     }
     public static final class style {
         /** 
