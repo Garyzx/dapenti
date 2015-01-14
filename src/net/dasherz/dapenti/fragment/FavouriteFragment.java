@@ -140,16 +140,14 @@ public class FavouriteFragment extends Fragment {
 					return;
 				}
 				// if user clicked on an real item
-				if (position < adapter.getCount() - 1) {
-					Penti item = adapter.getPentis().get(position);
-					LogUtil.d(TAG, "Opening new activity to show web page");
-					Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
-					intent.putExtra(DBConstants.ITEM_ID, item.getId());
-					intent.putExtra(DBConstants.ITEM_TITLE, item.getTitle());
-					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.getDescription());
-					intent.putExtra(DBConstants.ITEM_LINK, item.getLink());
-					startActivity(intent);
-				}
+				Penti item = adapter.getPentis().get(position);
+				LogUtil.d(TAG, "Opening new activity to show web page");
+				Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
+				intent.putExtra(DBConstants.ITEM_ID, item.getId());
+				intent.putExtra(DBConstants.ITEM_TITLE, item.getTitle());
+				intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.getDescription());
+				intent.putExtra(DBConstants.ITEM_LINK, item.getLink());
+				startActivity(intent);
 
 			}
 		});
@@ -238,15 +236,19 @@ public class FavouriteFragment extends Fragment {
 		@Override
 		protected void onPostExecute(List<Penti> data) {
 			if (data == null) {
-				mListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-						new String[] { getResources().getString(R.string.no_data) }));
+				if (isAdded()) {
+					mListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
+							new String[] { getResources().getString(R.string.no_data) }));
+				}
 				isRefreshing = false;
 				return;
 			}
 			if (data.size() == 0) {
 				// adapter.notifyDataSetChanged();
-				Toast.makeText(getActivity(), getResources().getString(R.string.no_more_data_try_refresh),
-						Toast.LENGTH_SHORT).show();
+				if (isAdded()) {
+					Toast.makeText(getActivity(), getResources().getString(R.string.no_more_data_try_refresh),
+							Toast.LENGTH_SHORT).show();
+				}
 				return;
 			}
 			if (adapter == null) {
@@ -270,9 +272,11 @@ public class FavouriteFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			Toast.makeText(getActivity(), getResources().getString(R.string.already_removed_from_fav),
-					Toast.LENGTH_SHORT).show();
-			getLatestData();
+			if (isAdded()) {
+				Toast.makeText(getActivity(), getResources().getString(R.string.already_removed_from_fav),
+						Toast.LENGTH_SHORT).show();
+				getLatestData();
+			}
 		}
 	}
 }

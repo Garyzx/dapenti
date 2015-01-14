@@ -1,6 +1,10 @@
 package net.dasherz.dapenti.activity;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import net.dasherz.dapenti.R;
 import net.dasherz.dapenti.database.DBConstants;
@@ -15,17 +19,43 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class PentiDetailActivity extends Activity {
+	public class MyWebViewClient extends WebViewClient {
+
+		@Override
+		public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+			if (!url.startsWith("http")) {
+				return null;
+			}
+			try {
+				URL requestUrl = new URL(url);
+				HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+				connection.addRequestProperty("Referer", PentiDetailActivity.this.url);
+				connection.setDoInput(true);
+				connection.connect();
+				InputStream stream = connection.getInputStream();
+				return new WebResourceResponse(connection.getContentType(), connection.getContentEncoding(), stream);
+			} catch (IOException e) {
+				LogUtil.e(TAG, e.getMessage());
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+	}
+
 	private static final String TAG = PentiDetailActivity.class.getSimpleName();
 	TextView titleView;
 	WebView tuguaWebView;
@@ -35,12 +65,12 @@ public class PentiDetailActivity extends Activity {
 	private DBHelper dbhelper;
 	private ShareActionProvider mShareActionProvider;
 	private Intent mShareIntent;
-	private Menu mOptionsMenu;
 	private boolean optimizeHTML = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getOverflowMenu();
 		setContentView(R.layout.activity_penti_detail);
 		dbhelper = DBHelper.getInstance(getApplication());
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -56,7 +86,27 @@ public class PentiDetailActivity extends Activity {
 		titleView.setText(title);
 		boolean whetherBlockImage = NetUtil.whetherBlockImage(this);
 		tuguaWebView.getSettings().setBlockNetworkImage(whetherBlockImage);
+		tuguaWebView.setWebViewClient(new MyWebViewClient());
+		tuguaWebView
+				.getSettings()
+				.setUserAgentString(
+						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36");
+		// tuguaWebView.clearCache(true);
 		new LoadPageTask().execute(url);
+	}
+
+	private void getOverflowMenu() {
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+			if (menuKeyField != null) {
+				menuKeyField.setAccessible(true);
+				menuKeyField.setBoolean(config, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	class LoadPageTask extends AsyncTask<String, Void, String> {
@@ -80,6 +130,7 @@ public class PentiDetailActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(String result) {
+			// LogUtil.d(TAG, result);
 			tuguaWebView.loadData(result, "text/html; charset=UTF-8", null);
 			progressBar.setVisibility(View.GONE);
 		}
@@ -87,21 +138,10 @@ public class PentiDetailActivity extends Activity {
 	}
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_MENU && mOptionsMenu != null) {
-			// http://stackoverflow.com/questions/3720804/android-open-menu-from-a-button
-			mOptionsMenu.performIdentifierAction(R.id.more_menu, 0);
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.tugua_detail, menu);
 		MenuItem item = menu.findItem(R.id.share);
-		mOptionsMenu = menu;
 		mShareActionProvider = (ShareActionProvider) item.getActionProvider();
 		mShareIntent = new Intent();
 		mShareIntent.setAction(Intent.ACTION_SEND);

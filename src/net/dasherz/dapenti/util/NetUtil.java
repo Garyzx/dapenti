@@ -65,6 +65,8 @@ public class NetUtil {
 		}
 		line = line.replace("<p>&nbsp;</p>", "").replace("<p><strong><font size=\"3\"></font></strong>&nbsp;</p>", "");
 		line = line.replaceAll("<IFRAME[^>]+?></IFRAME>", "");
+		line = line.replaceAll("<OBJECT.+?>", "");
+		line = line.replaceAll("<embed.+?></embed>", "");
 		line = line.replaceAll("(<A[^>]+?>)(http.+?)(</A>)", "$1¡¥Ω”µÿ÷∑$3");
 		return line;
 	}

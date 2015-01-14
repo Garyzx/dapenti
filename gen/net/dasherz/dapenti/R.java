@@ -1093,9 +1093,8 @@ containing a value of this type.
         public static final int ic_menu_copy_holo_dark=0x7f020058;
         public static final int ic_menu_refresh=0x7f020059;
         public static final int ic_menu_share_holo_dark=0x7f02005a;
-        public static final int ic_more_vert_white=0x7f02005b;
-        public static final int ic_settings=0x7f02005c;
-        public static final int row_selector=0x7f02005d;
+        public static final int ic_settings=0x7f02005b;
+        public static final int row_selector=0x7f02005c;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f06003c;
@@ -1136,12 +1135,11 @@ containing a value of this type.
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f060029;
         public static final int middle=0x7f060012;
-        public static final int more_menu=0x7f06004c;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
         public static final int normal=0x7f060000;
-        public static final int open_in_browser=0x7f06004d;
-        public static final int open_original_content=0x7f06004e;
+        public static final int open_in_browser=0x7f06004c;
+        public static final int open_original_content=0x7f06004d;
         public static final int pentiListView=0x7f060043;
         public static final int progressBar1=0x7f060041;
         public static final int progress_circular=0x7f060018;

@@ -81,8 +81,10 @@ public abstract class PentiBaseFragment extends Fragment {
 	}
 
 	private void setLoadingForList() {
-		listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
-				new String[] { getResources().getString(R.string.loading) }));
+		if (isAdded()) {
+			listView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,
+					new String[] { getResources().getString(R.string.loading) }));
+		}
 	}
 
 	private void handleMultiChoiceMode() {
@@ -175,16 +177,14 @@ public abstract class PentiBaseFragment extends Fragment {
 					return;
 				}
 				// if user clicked on an real item
-				if (position < adapter.getCount() - 1) {
-					Penti item = adapter.getPentis().get(position);
-					LogUtil.d(TAG, "Opening new activity to show web page");
-					Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
-					intent.putExtra(DBConstants.ITEM_ID, item.getId());
-					intent.putExtra(DBConstants.ITEM_TITLE, item.getTitle());
-					intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.getDescription());
-					intent.putExtra(DBConstants.ITEM_LINK, item.getLink());
-					startActivity(intent);
-				}
+				Penti item = adapter.getPentis().get(position);
+				LogUtil.d(TAG, "Opening new activity to show web page");
+				Intent intent = new Intent(getActivity(), PentiDetailActivity.class);
+				intent.putExtra(DBConstants.ITEM_ID, item.getId());
+				intent.putExtra(DBConstants.ITEM_TITLE, item.getTitle());
+				intent.putExtra(DBConstants.ITEM_DESCRIPTION, item.getDescription());
+				intent.putExtra(DBConstants.ITEM_LINK, item.getLink());
+				startActivity(intent);
 
 			}
 		});
@@ -279,11 +279,15 @@ public abstract class PentiBaseFragment extends Fragment {
 				adapter = null;
 				new LoadItemTask().execute();
 			} else if (result.intValue() == -1) {
-				Toast.makeText(getActivity(), getResources().getString(R.string.update_failed), Toast.LENGTH_SHORT)
-						.show();
+				if (isAdded()) {
+					Toast.makeText(getActivity(), getResources().getString(R.string.update_failed), Toast.LENGTH_SHORT)
+							.show();
+				}
 			} else {
-				Toast.makeText(getActivity(), getResources().getString(R.string.already_updated), Toast.LENGTH_SHORT)
-						.show();
+				if (isAdded()) {
+					Toast.makeText(getActivity(), getResources().getString(R.string.already_updated),
+							Toast.LENGTH_SHORT).show();
+				}
 			}
 			swipeLayout.setRefreshing(false);
 			isRefreshing = false;
@@ -315,13 +319,15 @@ public abstract class PentiBaseFragment extends Fragment {
 				return;
 			}
 			if (data.size() == 0) {
-				adapter.notifyDataSetChanged();
-				Toast.makeText(getActivity(), getResources().getString(R.string.no_more_data), Toast.LENGTH_SHORT)
-						.show();
+				if (isAdded()) {
+					adapter.notifyDataSetChanged();
+					Toast.makeText(getActivity(), getResources().getString(R.string.no_more_data), Toast.LENGTH_SHORT)
+							.show();
+				}
 				return;
 			}
 			if (adapter == null) {
-				if (getActivity() != null) {
+				if (isAdded()) {
 					adapter = new PentiAdapter(getActivity(), data);
 					listView.setAdapter(adapter);
 				}
@@ -337,8 +343,10 @@ public abstract class PentiBaseFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			Toast.makeText(getActivity(), getResources().getString(R.string.already_added_to_fav), Toast.LENGTH_SHORT)
-					.show();
+			if (isAdded()) {
+				Toast.makeText(getActivity(), getResources().getString(R.string.already_added_to_fav),
+						Toast.LENGTH_SHORT).show();
+			}
 		}
 
 		@Override
