@@ -68,10 +68,16 @@ public abstract class PentiBaseFragment extends Fragment {
 		handleItemClick();
 		handlePullingUpLoading();
 		dbHelper = DBHelper.getInstance(getActivity());
+		return root;
+	}
+
+	@Override
+	public void onResume() {
 		if (adapter == null) {
 			new LoadItemTask().execute();
 		}
-		return root;
+		LogUtil.d(TAG, "onResume");
+		super.onResume();
 	}
 
 	private void setLoadingForList() {
@@ -315,8 +321,10 @@ public abstract class PentiBaseFragment extends Fragment {
 				return;
 			}
 			if (adapter == null) {
-				adapter = new PentiAdapter(getActivity(), data);
-				listView.setAdapter(adapter);
+				if (getActivity() != null) {
+					adapter = new PentiAdapter(getActivity(), data);
+					listView.setAdapter(adapter);
+				}
 			} else {
 				adapter.getPentis().addAll(data);
 				adapter.notifyDataSetChanged();
