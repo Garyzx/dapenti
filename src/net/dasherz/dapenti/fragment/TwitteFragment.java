@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
  * 
  */
 public class TwitteFragment extends PentiBaseFragment {
+	public TwitteFragment() {
+	}
 
 	@Override
 	int getContentType() {

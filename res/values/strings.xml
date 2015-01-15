@@ -30,5 +30,6 @@
     <string name="no_more_data">没有更多数据了</string>
     <string name="already_updated">已经是最新了</string>
     <string name="update_failed">更新出错了</string>
+    <string name="html_loading"><html><head><body><h1><strong>正在加载...</strong></h1></body></head></html></string>
 
 </resources>

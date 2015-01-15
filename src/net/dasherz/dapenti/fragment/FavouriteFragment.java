@@ -47,6 +47,9 @@ public class FavouriteFragment extends Fragment {
 	int recordCount = 0;
 	private boolean isRefreshing = false;
 
+	public FavouriteFragment() {
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.list, container, false);

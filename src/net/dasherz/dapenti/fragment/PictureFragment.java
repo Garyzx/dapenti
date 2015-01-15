@@ -9,6 +9,9 @@ import android.support.v4.app.Fragment;
  */
 public class PictureFragment extends PentiBaseFragment {
 
+	public PictureFragment() {
+	}
+
 	@Override
 	int getContentType() {
 		return DBConstants.CONTENT_TYPE_PICTURE;

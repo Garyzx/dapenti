@@ -9,6 +9,9 @@ import android.support.v4.app.Fragment;
  */
 public class TuguaFragment extends PentiBaseFragment {
 
+	public TuguaFragment() {
+	}
+
 	@Override
 	int getContentType() {
 		return DBConstants.CONTENT_TYPE_TUGUA;

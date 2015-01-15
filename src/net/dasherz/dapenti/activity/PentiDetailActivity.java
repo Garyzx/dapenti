@@ -32,6 +32,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PentiDetailActivity extends Activity {
+	private static final String TEXT_HTML_CHARSET_UTF_8 = "text/html; charset=UTF-8";
+
+	/**
+	 * This class can intercept all request sent by webview, currently it's no
+	 * use, leave it as example
+	 * 
+	 * @author gary
+	 * 
+	 */
 	public class MyWebViewClient extends WebViewClient {
 
 		@Override
@@ -76,6 +85,7 @@ public class PentiDetailActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		titleView = (TextView) findViewById(R.id.tuguaTitle);
 		tuguaWebView = (WebView) findViewById(R.id.tuguaDetailPage);
+		tuguaWebView.loadData(getResources().getString(R.string.html_loading), TEXT_HTML_CHARSET_UTF_8, null);
 		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 
 		Intent intent = getIntent();
@@ -86,12 +96,10 @@ public class PentiDetailActivity extends Activity {
 		titleView.setText(title);
 		boolean whetherBlockImage = NetUtil.whetherBlockImage(this);
 		tuguaWebView.getSettings().setBlockNetworkImage(whetherBlockImage);
-		tuguaWebView.setWebViewClient(new MyWebViewClient());
 		tuguaWebView
 				.getSettings()
 				.setUserAgentString(
 						"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36");
-		// tuguaWebView.clearCache(true);
 		new LoadPageTask().execute(url);
 	}
 
@@ -131,7 +139,7 @@ public class PentiDetailActivity extends Activity {
 		@Override
 		protected void onPostExecute(String result) {
 			// LogUtil.d(TAG, result);
-			tuguaWebView.loadData(result, "text/html; charset=UTF-8", null);
+			tuguaWebView.loadDataWithBaseURL(url, result, null, TEXT_HTML_CHARSET_UTF_8, url);
 			progressBar.setVisibility(View.GONE);
 		}
 

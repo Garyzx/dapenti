@@ -12,6 +12,9 @@ public class FragmentPreferences extends Activity {
 	private static final String TAG = FragmentPreferences.class.getSimpleName();
 
 	public class PrefsFragement extends PreferenceFragment {
+		public PrefsFragement() {
+
+		}
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
