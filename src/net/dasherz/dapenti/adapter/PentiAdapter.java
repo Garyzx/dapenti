@@ -100,10 +100,10 @@ public class PentiAdapter extends BaseAdapter {
 		}
 		if (mSelection.get(position) != null) {
 			// holder.text.setBackgroundColor(ctx.getResources().getColor(R.color.holo_blue_color));
-			holder.text.setBackgroundResource(R.drawable.border_select);
+			holder.text.setBackgroundResource(R.drawable.border_item_selected);
 		} else {
-			// holder.text.setBackgroundColor(Color.WHITE);
-			holder.text.setBackgroundResource(R.drawable.border_normal);
+			// holder.text.setBackgroundColor(Color.TRANSPARENT);
+			holder.text.setBackgroundResource(R.drawable.border_item_normal);
 		}
 		return convertView;
 	}

@@ -130,7 +130,7 @@ public class PentiDetailActivity extends Activity {
 			if (lines == null) {
 				lines = getResources().getString(R.string.get_data_failed);
 			}
-			String content = "<html xmlns=\"http://www.w3.org/1999/xhtml\" ><head><meta http-equiv='content-type' content='text/html; charset=utf-8' /></head><body>"
+			String content = "<html xmlns=\"http://www.w3.org/1999/xhtml\" ><head><meta http-equiv='content-type' content='text/html; charset=utf-8' /><style type=\"text/css\">img {	width: 100%;}</style></head><body>"
 					+ lines + "</body>";
 			lines = null;
 			return content;
