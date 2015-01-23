@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:dividerHeight="1dp"
+            android:divider="@null"
+            android:dividerHeight="0dp"
             android:listSelector="@drawable/row_selector" >
         </ListView>
     </android.support.v4.widget.SwipeRefreshLayout>

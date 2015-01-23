@@ -7,10 +7,10 @@
     
     tools:context="net.dasherz.dapenti.activity.MainActivity" >
 
-
 <android.support.v4.view.ViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+    android:id="@+id/viewPager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_grey" />
+
 </LinearLayout>

@@ -9,7 +9,6 @@ import net.dasherz.dapenti.database.DBConstants;
 import net.dasherz.dapenti.database.Penti;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,9 +99,11 @@ public class PentiAdapter extends BaseAdapter {
 			holder.text.setText(getItem(position).toString());
 		}
 		if (mSelection.get(position) != null) {
-			convertView.setBackgroundColor(ctx.getResources().getColor(R.color.holo_blue_color));
+			// holder.text.setBackgroundColor(ctx.getResources().getColor(R.color.holo_blue_color));
+			holder.text.setBackgroundResource(R.drawable.border_select);
 		} else {
-			convertView.setBackgroundColor(Color.TRANSPARENT);
+			// holder.text.setBackgroundColor(Color.WHITE);
+			holder.text.setBackgroundResource(R.drawable.border_normal);
 		}
 		return convertView;
 	}
