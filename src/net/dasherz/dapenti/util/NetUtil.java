@@ -62,6 +62,7 @@ public class NetUtil {
 	private static String optimizeHTMLCode(String line) {
 		if (isNormalGif(line)) {
 			line = line.replace("<IMG", "<IMG width=\"100%\"");
+			line = line.replace("<img", "<img width=\"100%\"");
 		}
 		line = line.replace("<p>&nbsp;</p>", "").replace("<p><strong><font size=\"3\"></font></strong>&nbsp;</p>", "");
 		line = line.replaceAll("<IFRAME[^>]+?></IFRAME>", "");
