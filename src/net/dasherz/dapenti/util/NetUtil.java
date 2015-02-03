@@ -60,7 +60,7 @@ public class NetUtil {
 	}
 
 	private static String optimizeHTMLCode(String line) {
-		if (isNormalGif(line)) {
+		if (isNormalEmoji(line)) {
 			line = line.replace("<IMG", "<IMG width=\"100%\"");
 			line = line.replace("<img", "<img width=\"100%\"");
 		}
@@ -72,9 +72,11 @@ public class NetUtil {
 		return line;
 	}
 
-	private static boolean isNormalGif(String line) {
+	private static boolean isNormalEmoji(String line) {
 		if (line.contains("<IMG") || line.contains("<img")) {
 			if (line.contains("type=\"face\"")) {
+				return false;
+			} else if (line.contains("width=")) {
 				return false;
 			} else {
 				return true;
