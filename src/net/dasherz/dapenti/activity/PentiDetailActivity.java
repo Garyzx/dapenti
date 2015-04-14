@@ -74,7 +74,7 @@ public class PentiDetailActivity extends Activity {
 	private DBHelper dbhelper;
 	private ShareActionProvider mShareActionProvider;
 	private Intent mShareIntent;
-	private boolean optimizeHTML = true;
+	private boolean optimizeHTML = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +96,8 @@ public class PentiDetailActivity extends Activity {
 		titleView.setText(title);
 		boolean whetherBlockImage = NetUtil.whetherBlockImage(this);
 		tuguaWebView.getSettings().setBlockNetworkImage(whetherBlockImage);
+		tuguaWebView.getSettings().setJavaScriptEnabled(true);
+		tuguaWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		tuguaWebView
 				.getSettings()
 				.setUserAgentString(
